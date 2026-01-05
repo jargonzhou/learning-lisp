@@ -1,0 +1,135 @@
+# ex01-transcoders.ss
+
+;;; eol-style
+(eol-style crlf) ;=> crlf
+
+
+;;; error-handling-mode
+(error-handling-mode replace) ;=> replace
+
+# ex02-open-files.ss
+
+;;; buffer-mode, buffer-mode?
+(buffer-mode block) ;=> block
+(buffer-mode? (quote block)) ;=> #t
+(buffer-mode? (quote line)) ;=> #t
+(buffer-mode? (quote none)) ;=> #t
+(buffer-mode? (quote something-else)) ;=> #f
+
+# ex03-standard-ports.ss
+
+;;; current-output-port
+"Hello, Scheme!"
+
+;;; standard-output-port
+"Hello, Scheme!"
+
+# ex04-string-bytevector-ports.ss
+
+;;; open-bytevector-input-port
+x1 ;=> 1
+x2 ;=> 2
+(eof-object? x3) ;=> #t
+
+
+;;; open-string-input-port
+(get-line (open-string-input-port "hi.\nwhat's up?\n")) ;=> "hi."
+
+
+;;; open-bytevector-output-port
+bv1 ;=> #vu8(15 73 115)
+(g) ;=> #vu8(27)
+
+
+;;; open-string-output-port
+str1 ;=> "some data"
+(g) ;=> "new stuff"
+
+
+;;; call-with-bytevector-output-port
+(call-with-bytevector-output-port (lambda (p) (put-string p "abc")) tx) ;=> #vu8(97 98 99)
+
+
+;;; call-with-string-output-port
+(object->string (cons (quote a) (quote (b c)))) ;=> "(a b c)"
+
+# ex05-open-custom-ports.ss
+
+;;; make-custom-binary-input-port
+(utf8->string (get-bytevector-n p 5)) ;=> "hello"
+
+# ex06-port-operations.ss
+
+;;; call-with-port
+
+> see contents of 'outfile'.
+
+# ex07-input-operations.ss
+
+;;; lookahead
+(get-word (open-string-input-port "hi.\nwhat's up?\n")) ;=> "hi"
+
+
+;;; get-string-n!
+x ;=> ";-)"
+
+
+;;; get-line
+s1 ;=> "one"
+s2 ;=> "two"
+(port-eof? sip) ;=> #t
+
+s1 ;=> "one"
+s2 ;=> "two"
+(port-eof? sip) ;=> #t
+
+
+;;; get-datum
+x1 ;=> one
+c1 ;=> #\space
+x2 ;=> (two)
+(port-eof? sip) ;=> #f
+
+# ex08-output-operations.ss
+
+;;; put-u8, put-bytevector, put-char, put-string, put-datum
+a
+a
+#\a#\newlinea
+a
+
+# ex09-convenience-io.ss
+
+;;; open-output-file
+remove path: myfile.ss
+
+;;; open-input-file
+(let f ((x (read p))) (if (eof-object? x) (begin (close-port p) (quote ())) (cons x (f (read p))))) ;=> ((import (io simple)) (display "Hello, Scheme!") (newline) (exit))
+
+
+;;; call-with-output-file
+remove path: myfile.ss
+
+;;; call-with-input-file
+(let f ((x (read p))) (if (eof-object? x) (quote ()) (cons x (f (read p))))) ;=> ((import (io simple)) (display "Hello, Scheme!") (newline) (exit))
+
+# ex10-filesystem-operations.ss
+
+remove path: myfile.ss
+
+# ex11-bytevector-string-conversions.ss
+
+;;; bytevector->string
+(bytevector->string #vu8(97 98 99) tx) ;=> "abc"
+
+
+;;; string->bytevector
+(string->bytevector "abc" tx) ;=> #vu8(97 98 99)
+
+
+;;; string->utf8
+(string->utf8 "abc") ;=> #vu8(97 98 99)
+
+
+;;; utf8->string
+(utf8->string #vu8(97 98 99)) ;=> "abc"

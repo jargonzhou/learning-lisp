@@ -1,0 +1,7 @@
+{:paths ["src"]
+ :deps
+ {org.clojure/clojure {:mvn/version "1.12.3"}
+  org.clojure/test.check {:mvn/version "1.1.2"}
+  org.apache.commons/commons-lang3 {:mvn/version "3.20.0"}}
+
+ :aliases {:dev {:extra-paths ["test"]}}}

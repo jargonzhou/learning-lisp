@@ -1,0 +1,81 @@
+# core.clj
+
+✗ clj -m hangman.core
+WARNING: Implicit use of clojure.main with options is deprecated, use -M
+
+✗ clj -M -m hangman.core
+
+✗ clj -X hangman.core/-main
+
+You are guessing a word with 5 letters
+
+Enter a letter: a
+
+You gueesed: a
+The letter a is in the word!
+Progress so far: a____
+
+Enter a letter: b
+
+You gueesed: b
+The letter b is in the word!
+Progress so far: ab___
+
+Enter a letter: c
+
+You gueesed: c
+Sorry, the word does not contain: c
+Progress so far: ab___
+
+Enter a letter: o
+
+You gueesed: o
+Sorry, the word does not contain: o
+Progress so far: ab___
+
+Enter a letter: u
+
+You gueesed: u
+The letter u is in the word!
+Progress so far: abu__
+
+Enter a letter: s
+
+You gueesed: s
+The letter s is in the word!
+Progress so far: abus_
+
+Enter a letter: e
+
+You gueesed: e
+The letter e is in the word!
+Progress so far: abuse
+
+
+# specs.clj
+
+✗ clj
+user=> (require '[hangman.specs])
+user=> (in-ns 'hangman.specs)
+hangman.specs=> *ns*
+#object[clojure.lang.Namespace 0x72a85671 "hangman.specs"]
+
+hangman.specs=> (run-gen)
+{:sym hangman.core/update-progress}
+{:sym hangman.core/new-progress}
+{:sym hangman.core/game}
+{:sym hangman.core/complete?}
+{:total 4, :check-passed 4}
+
+hangman.specs=> (run-gen2)
+{:sym hangman.core/new-progress}
+{:sym hangman.core/game}
+{:sym hangman.core/update-progress}
+{:sym hangman.core/new-progress}
+{:sym hangman.core/game}
+{:sym hangman.core/complete?}
+{:sym hangman.core/update-progress}
+{:sym hangman.core/new-progress}
+{:sym hangman.core/game}
+{:sym hangman.core/complete?}
+{:total 4, :check-passed 4}

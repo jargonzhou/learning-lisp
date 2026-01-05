@@ -1,0 +1,111 @@
+(import (io simple))
+
+(comments "define-enumeration")
+(let ()
+  (define-enumeration weather-element
+    (hot warm cold sunny rainy snowy windy)
+    weather)
+
+  (prs
+    (weather-element hot)
+    ; (weather-element fun) ; universe of weather-element does not include specified symbol
+    (weather hot sunny windy)
+    (enum-set->list (weather rainy cold rainy))))
+
+(comments "make-enumeration")
+(let ()
+  (define positions (make-enumeration '(top bottom above top beside)))
+  (prs (enum-set->list positions)))
+
+(comments "enum-set-constructor")
+(let ()
+  (define e1 (make-enumeration '(one two three four)))
+  (define p1 (enum-set-constructor e1))
+  (define e2 (p1 '(one three)))
+  (prs (enum-set->list e2))
+  (let ()
+    (define p2 (enum-set-constructor e2))
+    (let ()
+      (define e3 (p2 '(one two four)))
+      (prs (enum-set->list e3)))))
+
+(comments "enum-set-universe")
+(let ()
+  (define e1 (make-enumeration '(a b c a b c d)))
+  (prs (enum-set->list (enum-set-universe e1)))
+  (let ()
+    (define e2 ((enum-set-constructor e1) '(c)))
+    (prs (enum-set->list (enum-set-universe e2)))))
+
+(comments "enum-set->list")
+(let ()
+  (define e1 (make-enumeration '(a b c a b c d)))
+  (prs (enum-set->list e1))
+  (let ()
+    (define e2 ((enum-set-constructor e1) '(d c a b)))
+    (prs (enum-set->list e2))))
+
+(comments "enum-set-subset?")
+(let ()
+  (define e1 (make-enumeration '(a b c)))
+  (define e2 (make-enumeration '(a b c d e)))
+  (prs
+    (enum-set-subset? e1 e2)
+    (enum-set-subset? e2 e1))
+  (let ()
+    (define e3 ((enum-set-constructor e2) '(a c)))
+    (prs (enum-set-subset? e3 e1)
+      (enum-set-subset? e3 e2))))
+
+(comments "enum-set=?")
+(let ()
+  (define e1 (make-enumeration '(a b c d)))
+  (define e2 (make-enumeration '(b d c a)))
+  (prs (enum-set=? e1 e2))
+  (let ()
+    (define e3 ((enum-set-constructor e1) '(a c)))
+    (define e4 ((enum-set-constructor e2) '(a c)))
+    (prs 
+      (enum-set=? e3 e4)
+      (enum-set=? e3 e2))))
+
+(comments "enum-set-member?")
+(let ()
+  (define e1 (make-enumeration '(a b c d e)))
+  (define e2 ((enum-set-constructor e1) '(d b)))
+  (prs
+    (enum-set-member? 'c e1)
+    (enum-set-member? 'c e2)))
+
+(comments "union, intersection, difference")
+(let ()
+  (define e1 (make-enumeration '(a b c d)))
+  (define e2 ((enum-set-constructor e1) '(a c)))
+  (define e3 ((enum-set-constructor e1) '(b c)))
+  (prs
+    (enum-set->list (enum-set-union e2 e3))
+    (enum-set->list (enum-set-intersection e2 e3))
+    (enum-set->list (enum-set-difference e2 e3))
+    (enum-set->list (enum-set-difference e3 e2)))
+  (let ()
+    (define e4 (make-enumeration '(b d c a)))
+    ; (prs (enum-set-union e1 e4)) ;  #<enum-set> and #<enum-set> have different enumeration types
+    (prs e4)
+    ))
+
+(comments "complement")
+(let ()
+  (define e1 (make-enumeration '(a b c d)))
+  (prs (enum-set->list (enum-set-complement e1)))
+  (let ()
+    (define e2 ((enum-set-constructor e1) '(a c)))
+    (prs (enum-set->list (enum-set-complement e2)))))
+
+(comments "enum-set-indexer")
+(let ()
+  (define e1 (make-enumeration '(a b c d)))
+  (define e2 ((enum-set-constructor e1) '(a d)))
+  (define p (enum-set-indexer e2))
+  (prs (p 'a) (p 'c) (p 'e)))
+
+(exit)

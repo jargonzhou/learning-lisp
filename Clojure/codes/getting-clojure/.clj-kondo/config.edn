@@ -1,0 +1,8 @@
+{:config-in-ns {basics.c01-hello-clojure
+                {:ignore [:unused-binding :redefined-var]}
+                basics.c04-logic
+                {:ignore [:missing-else-branch]}
+                basics.c05-more-capable-functions
+                {:ignore [:unused-binding]}
+                basics.c07-let
+                {:ignore [:missing-else-branch]}}}

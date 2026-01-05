@@ -1,0 +1,110 @@
+# ex01-keyword-binding.ss
+
+;;; define-syntax
+|(_let* (_let* ((x 0)) x))
+|(let ([x 0]) (_let* () x))
+|(_let* (_let* () x))
+|(let () x)
+(even? 10) ;=> #t
+
+x ;=> 0
+
+
+;;; let-syntax, letrec-syntax
+(list (f 1) (g 1)) ;=> (1 2)
+
+(list (f 1) (g 1)) ;=> (1 1)
+
+# ex02-syntax-rules.ss
+
+;;; syntax-rules
+(_or (< x 2) (> x 4)) ;=> #t
+(_or #f (quote (a b)) (quote (c d))) ;=> (a b)
+(let ((if #f)) (let ((t (quote okay))) (_or if t))) ;=> okay
+
+(select 3) ;=> positive
+
+
+;;; identifier-syntax
+(list (a (quote (1 2 3))) a) ;=> (1 #<procedure car>)
+
+(list before a ls) ;=> (0 1 (1))
+
+# ex03-syntax-case.ss
+
+;;; syntax-case
+
+;;; syntax
+(_or) ;=> #f
+(_or (quote a)) ;=> a
+(_or (quote a) (quote b)) ;=> a
+
+
+;;; identifier?
+(list a pcar) ;=> (0 1)
+
+
+;;; free-identifier=?, bound-identifier=?
+(_cond (else (write "oops"))) ;=> #<void>
+
+x ;=> #<syntax (_let ((a 3) (b 4)) (prs (+ a b))) [line 79, char 1 of d:\workspace\learning-lisp\codes\scheme\chez\c08\ex03-syntax-case.ss]>
+
+(+ a b) ;=> 7
+
+x ;=> #<syntax (_let ((a 0)) (let-syntax ((dolet (lambda (x) (syntax-case x () ((_ b) (syntax (let ((a 3) (b 4)) (+ a b)))))))) (prs (dolet a) (dolet b) (dolet c)))) [line 86, char 1 of d:\workspace\learning-lisp\codes\scheme\chez\c08\ex03-syntax-case.ss]>  
+
+(dolet a) ;=> 7
+(dolet b) ;=> 7
+(dolet c) ;=> 7
+
+
+;;; with-syntax
+
+;;; quasisyntax
+
+;;; make-variable-transformer
+x ;=> #<syntax (_let ((ls (list 0))) (define-syntax a (make-variable-transformer (lambda (x) (syntax-case x () (id (identifier? (syntax id)) (syntax (car ls))) ((set! _ e) (syntax (set-car! ls e))) ((_ e ...) (syntax ((car ls) e ...))))))) (_let ((before a)) (set! a 1) (prs (list before a ls)))) [line 144, char 1 of d:\workspace\learning-lisp\codes\scheme\chez\c08\ex03-syntax-case.ss]>
+
+x ;=> #<syntax (_let ((before a)) (set! a 1) (prs (list before a ls))) [line 152, char 3 of d:\workspace\learning-lisp\codes\scheme\chez\c08\ex03-syntax-case.ss]>
+
+(list before a ls) ;=> (0 1 (1))
+
+
+;;; syntax->datum
+(symbolic-identifier=? (syntax x) (syntax y)) ;=> #f
+(symbolic-identifier=? (syntax x) (syntax x)) ;=> #t
+
+
+;;; datum->syntax
+x ;=> #<syntax (_let ((n 3) (ls (quote ()))) (prs (loop (if (= n 0) (break ls)) (set! ls (cons (quote a) ls)) (set! n (- n 1))))) [line 175, char 1 of d:\workspace\learning-lisp\codes\scheme\chez\c08\ex03-syntax-case.ss]>
+
+(loop (if (= n 0) (break ls)) (set! ls (cons (quote a) ls)) (set! n (- n 1))) ;=> (a a a)
+
+(f) ;=> "okay"
+
+
+;;; generate-temporaries
+(_letrec ((sum (lambda (x) (if (zero? x) 0 (+ x (sum (- x 1))))))) (sum 5)) ;=> 15
+
+# ex04-examples.ss
+
+;;; rec
+(map (rec sum (lambda (x) (if (= x 0) 0 (+ x (sum (- x 1)))))) ls) ;=> (0 1 3 6 10 15)
+
+
+;;; sequence
+Say what?
+
+;;; method
+(m (vector 1) 2) ;=> (1 2 #(1))
+
+(m (vector 1) 2) ;=> (2 4 #(2))
+
+
+;;; def-structure
+t ;=> #(tree #(tree 0 1) #(tree 2 3))
+(tree? t) ;=> #t
+(tree-left t) ;=> #(tree 0 1)
+(tree-right t) ;=> #(tree 2 3)
+(set-tree-left! t 0) ;=> #<void>
+t ;=> #(tree 0 #(tree 2 3))

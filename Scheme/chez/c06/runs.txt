@@ -1,0 +1,1726 @@
+# ex01-const-quotation.ss
+
+;;; constants
+3.2 ;=> 3.2  
+#f ;=> #f    
+#\c ;=> #\c  
+"hi" ;=> "hi"
+#vu8(3 4 5) ;=> #vu8(3 4 5)
+
+
+;;; quote
+(+ 2 3) ;=> 5
+(quote (+ 2 3)) ;=> (+ 2 3)
+(quote (+ 2 3)) ;=> (+ 2 3)
+(quote a) ;=> a
+(quote cons) ;=> cons
+(quote ()) ;=> ()
+(quote 7) ;=> 7
+
+
+;;; quasiquote
+
+;;; unquote
+(quasiquote (+ 2 3)) ;=> (+ 2 3)
+(quasiquote (+ 2 (unquote (* 3 4)))) ;=> (+ 2 12)
+(quasiquote (a b ((unquote (+ 2 3)) c) d)) ;=> (a b (5 c) d)
+(quasiquote (a b (unquote (reverse (quote (c d e)))) f g)) ;=> (a b (e d c) f g)
+(let ((a 1) (b 2)) (quasiquote ((unquote a) unquote b))) ;=> (1 . 2)
+
+
+;;; unquote-splicing
+(quasiquote (+ (unquote-splicing (cdr (quote (* 2 3)))))) ;=> (+ 2 3)
+(quasiquote (a b (unquote-splicing (reverse (quote (c d e)))) f g)) ;=> (a b e d c f g)
+(let ((a 1) (b 2)) (quasiquote ((unquote a) (unquote-splicing b)))) ;=> (1 . 2)
+
+(quote (quasiquote (unquote (cons (quote a) (quote b))))) ;=> (quasiquote (unquote (cons (quote a) (quote b))))
+(quasiquote (quote (unquote (cons (quote a) (quote b))))) ;=> (quote (a . b))
+
+
+;;; unquote, unquote-splicing with zero or more subforms
+(quasiquote (a (unquote) b)) ;=> (a b)
+(quasiquote (a (unquote (+ 3 3)) b)) ;=> (a 6 b)
+(quasiquote (a (unquote (+ 3 3) (* 3 3)) b)) ;=> (a 6 9 b)
+(let ((x (quote (m n)))) (quasiquote (quasiquote (a (unquote-splicing (unquote-splicing x)) f)))) ;=> (quasiquote (a (unquote-splicing m n) f))
+(let ((x (quote (m n)))) (eval (quasiquote (let ((m (quote (b c))) (n (quote (d e)))) (quasiquote (a (unquote-splicing (unquote-splicing x)) f)))) (environment (quote (rnrs))))) ;=> (a b c d e f)
+
+# ex02-eq-type-pred.ss
+
+;;; eq?
+(eq? (quote a) 3) ;=> #f
+(eq? #t (quote t)) ;=> #f
+(eq? "abc" (quote abc)) ;=> #f
+(eq? "hi" (quote (hi))) ;=> #f
+(eq? #f (quote ())) ;=> #f
+(eq? 9/2 7/2) ;=> #f
+(eq? 3.4 53344) ;=> #f
+(eq? 3 3.0) ;=> #f
+(eq? 1/3 0.3333333333333333) ;=> #f
+(eq? 9/2 9/2) ;=> #f
+(eq? 3.4 (+ 3.0 0.4)) ;=> #f
+(let ((x (* 12345678987654321 2))) (eq? x x)) ;=> #t
+(eq? #\a #\b) ;=> #f
+(eq? #\a #\a) ;=> #t
+(let ((x (string-ref "hi" 0))) (eq? x x)) ;=> #t
+(eq? #t #t) ;=> #t
+(eq? #f #f) ;=> #t
+(eq? #t #f) ;=> #f
+(eq? (null? (quote ())) #t) ;=> #t
+(eq? (null? (quote (a))) #f) ;=> #t
+(eq? (cdr (quote (a))) (quote ())) ;=> #t
+(eq? (quote a) (quote a)) ;=> #t
+(eq? (quote a) (quote b)) ;=> #f
+(eq? (quote a) (string->symbol "a")) ;=> #t
+(eq? (quote (a)) (quote (b))) ;=> #f
+(eq? (quote (a)) (quote (a))) ;=> #f
+(let ((x (quote (a . b)))) (eq? x x)) ;=> #t
+(let ((x (cons (quote a) (quote b)))) (eq? x x)) ;=> #t
+(eq? (cons (quote a) (quote b)) (cons (quote a) (quote b))) ;=> #f
+(eq? "abc" "cba") ;=> #f
+(eq? "abc" "abc") ;=> #f
+(let ((x "hi")) (eq? x x)) ;=> #t
+(let ((x (string #\h #\i))) (eq? x x)) ;=> #t
+(eq? (string #\h #\i) (string #\h #\i)) ;=> #f
+(eq? (quote #vu8(1)) (quote #vu8(1))) ;=> #f
+(eq? (quote #vu8(1)) (quote #vu8(2))) ;=> #f
+(let ((x (make-bytevector 10 0))) (eq? x x)) ;=> #t
+(let ((x (make-bytevector 10 0))) (eq? x (make-bytevector 10 0))) ;=> #f
+(eq? (quote #(a)) (quote #(b))) ;=> #f
+(eq? (quote #(a)) (quote #(a))) ;=> #f
+(let ((x (quote #(a)))) (eq? x x)) ;=> #t
+(let ((x (vector (quote a)))) (eq? x x)) ;=> #t
+(eq? (vector (quote a)) (vector (quote a))) ;=> #f
+(eq? car car) ;=> #t
+(eq? car cdr) ;=> #f
+(let ((f (lambda (x) x))) (eq? f f)) ;=> #t
+(let ((f (lambda () (lambda (x) x)))) (eq? (f) (f))) ;=> #f
+(eq? (lambda (x) x) (lambda (y) y)) ;=> #f
+(let ((f (lambda (x) (lambda () (set! x (+ x 1)) x)))) (eq? (f 0) (f 0))) ;=> #f
+
+
+;;; eqv?
+(eqv? (quote a) 3) ;=> #f
+(eqv? #t (quote t)) ;=> #f
+(eqv? "abc" (quote abc)) ;=> #f
+(eqv? "hi" (quote (hi))) ;=> #f
+(eqv? #f (quote ())) ;=> #f
+(eqv? 9/2 7/2) ;=> #f
+(eqv? 3.4 53344) ;=> #f
+(eqv? 3 3.0) ;=> #f
+(eqv? 1/3 0.3333333333333333) ;=> #f
+(eqv? 9/2 9/2) ;=> #t
+(eqv? 3.4 (+ 3.0 0.4)) ;=> #t
+(let ((x (* 12345678987654321 2))) (eqv? x x)) ;=> #t
+(eqv? #\a #\b) ;=> #f
+(eqv? #\a #\a) ;=> #t
+(let ((x (string-ref "hi" 0))) (eqv? x x)) ;=> #t
+(eqv? #t #t) ;=> #t
+(eqv? #f #f) ;=> #t
+(eqv? #t #f) ;=> #f
+(eqv? (null? (quote ())) #t) ;=> #t
+(eqv? (null? (quote (a))) #f) ;=> #t
+(eqv? (cdr (quote (a))) (quote ())) ;=> #t
+(eqv? (quote a) (quote a)) ;=> #t
+(eqv? (quote a) (quote b)) ;=> #f
+(eqv? (quote a) (string->symbol "a")) ;=> #t
+(eqv? (quote (a)) (quote (b))) ;=> #f
+(eqv? (quote (a)) (quote (a))) ;=> #f
+(let ((x (quote (a . b)))) (eqv? x x)) ;=> #t
+(let ((x (cons (quote a) (quote b)))) (eqv? x x)) ;=> #t
+(eqv? (cons (quote a) (quote b)) (cons (quote a) (quote b))) ;=> #f
+(eqv? "abc" "cba") ;=> #f
+(eqv? "abc" "abc") ;=> #f
+(let ((x "hi")) (eqv? x x)) ;=> #t
+(let ((x (string #\h #\i))) (eqv? x x)) ;=> #t
+(eqv? (string #\h #\i) (string #\h #\i)) ;=> #f
+(eqv? (quote #vu8(1)) (quote #vu8(1))) ;=> #f
+(eqv? (quote #vu8(1)) (quote #vu8(2))) ;=> #f
+(let ((x (make-bytevector 10 0))) (eqv? x x)) ;=> #t
+(let ((x (make-bytevector 10 0))) (eqv? x (make-bytevector 10 0))) ;=> #f
+(eqv? (quote #(a)) (quote #(b))) ;=> #f
+(eqv? (quote #(a)) (quote #(a))) ;=> #f
+(let ((x (quote #(a)))) (eqv? x x)) ;=> #t
+(let ((x (vector (quote a)))) (eqv? x x)) ;=> #t
+(eqv? (vector (quote a)) (vector (quote a))) ;=> #f
+(eqv? car car) ;=> #t
+(eqv? car cdr) ;=> #f
+(let ((f (lambda (x) x))) (eqv? f f)) ;=> #t
+(let ((f (lambda () (lambda (x) x)))) (eqv? (f) (f))) ;=> #f
+(eqv? (lambda (x) x) (lambda (y) y)) ;=> #f
+(let ((f (lambda (x) (lambda () (set! x (+ x 1)) x)))) (eqv? (f 0) (f 0))) ;=> #f
+
+
+;;; equal
+(equal? (quote a) 3) ;=> #f
+(equal? #t (quote t)) ;=> #f
+(equal? "abc" (quote abc)) ;=> #f
+(equal? "hi" (quote (hi))) ;=> #f
+(equal? #f (quote ())) ;=> #f
+(equal? 9/2 7/2) ;=> #f
+(equal? 3.4 53344) ;=> #f
+(equal? 3 3.0) ;=> #f
+(equal? 1/3 0.3333333333333333) ;=> #f
+(equal? 9/2 9/2) ;=> #t
+(equal? 3.4 (+ 3.0 0.4)) ;=> #t
+(let ((x (* 12345678987654321 2))) (equal? x x)) ;=> #t
+(equal? #\a #\b) ;=> #f
+(equal? #\a #\a) ;=> #t
+(let ((x (string-ref "hi" 0))) (equal? x x)) ;=> #t
+(equal? #t #t) ;=> #t
+(equal? #f #f) ;=> #t
+(equal? #t #f) ;=> #f
+(equal? (null? (quote ())) #t) ;=> #t
+(equal? (null? (quote (a))) #f) ;=> #t
+(equal? (cdr (quote (a))) (quote ())) ;=> #t
+(equal? (quote a) (quote a)) ;=> #t
+(equal? (quote a) (quote b)) ;=> #f
+(equal? (quote a) (string->symbol "a")) ;=> #t
+(equal? (quote (a)) (quote (b))) ;=> #f
+(equal? (quote (a)) (quote (a))) ;=> #t
+(let ((x (quote (a . b)))) (equal? x x)) ;=> #t
+(let ((x (cons (quote a) (quote b)))) (equal? x x)) ;=> #t
+(equal? (cons (quote a) (quote b)) (cons (quote a) (quote b))) ;=> #t
+(equal? "abc" "cba") ;=> #f
+(equal? "abc" "abc") ;=> #t
+(let ((x "hi")) (equal? x x)) ;=> #t
+(let ((x (string #\h #\i))) (equal? x x)) ;=> #t
+(equal? (string #\h #\i) (string #\h #\i)) ;=> #t
+(equal? (quote #vu8(1)) (quote #vu8(1))) ;=> #t
+(equal? (quote #vu8(1)) (quote #vu8(2))) ;=> #f
+(let ((x (make-bytevector 10 0))) (equal? x x)) ;=> #t
+(let ((x (make-bytevector 10 0))) (equal? x (make-bytevector 10 0))) ;=> #t
+(equal? (quote #(a)) (quote #(b))) ;=> #f
+(equal? (quote #(a)) (quote #(a))) ;=> #t
+(let ((x (quote #(a)))) (equal? x x)) ;=> #t
+(let ((x (vector (quote a)))) (equal? x x)) ;=> #t
+(equal? (vector (quote a)) (vector (quote a))) ;=> #t
+(equal? car car) ;=> #t
+(equal? car cdr) ;=> #f
+(let ((f (lambda (x) x))) (equal? f f)) ;=> #t
+(let ((f (lambda () (lambda (x) x)))) (equal? (f) (f))) ;=> #f
+(equal? (lambda (x) x) (lambda (y) y)) ;=> #f
+(let ((f (lambda (x) (lambda () (set! x (+ x 1)) x)))) (equal? (f 0) (f 0))) ;=> #f
+(equal? (let ((x (cons (quote x) (quote x)))) (set-car! x x) (set-cdr! x x) x) (let ((x (cons (quote x) (quote x)))) (set-car! x x) (set-cdr! x x) (cons x x))) ;=> #t
+
+# ex03-list-pair.ss
+
+;;; cons, car, cdr, set-car!, set-cdr!, caar ...
+(cons (quote a) (quote ())) ;=> (a)
+(cons (quote a) (quote (b c))) ;=> (a b c)      
+(cons 3 4) ;=> (3 . 4)
+(car (quote (a))) ;=> a
+(car (quote (a b c))) ;=> a
+(car (cons 3 4)) ;=> 3
+(cdr (quote (a))) ;=> ()
+(cdr (quote (a b c))) ;=> (b c)
+(cdr (cons 3 4)) ;=> 4
+(let ((x (list (quote a) (quote b) (quote c)))) (set-car! x 1) x) ;=> (1 b c)
+(let ((x (list (quote a) (quote b) (quote c)))) (set-cdr! x 1) x) ;=> (a . 1)
+(caar (quote ((a)))) ;=> a
+(cadr (quote (a b c))) ;=> b
+(cdddr (quote (a b c d))) ;=> (d)
+(cadadr (quote (a (b c)))) ;=> c
+
+
+;;; list, cons*
+(list) ;=> ()
+(list 1 2 3) ;=> (1 2 3)
+(list 3 2 1) ;=> (3 2 1)
+(cons* (quote ())) ;=> ()
+(cons* (quote (a b))) ;=> (a b)
+(cons* (quote a) (quote b) (quote c)) ;=> (a b . c)
+(cons* (quote a) (quote b) (quote (c d))) ;=> (a b c d)
+
+
+;;; list?
+(list? (quote ())) ;=> #t
+(list? (quote (a b c))) ;=> #t
+(list? (quote a)) ;=> #f
+(list? (quote (3 . 4))) ;=> #f
+(list? 3) ;=> #f
+(let ((x (list (quote a) (quote b) (quote c)))) (set-cdr! (cddr x) x) (list? x)) ;=> #f
+
+
+;;; length
+(length (quote ())) ;=> 0
+(length (quote (a b c))) ;=> 3
+(length (let ((ls (list (quote a) (quote b)))) (set-car! (cdr ls) ls) ls)) ;=> 2
+
+
+;;; list-ref, list-tail
+(list-ref (quote (a b c)) 0) ;=> a
+(list-ref (quote (a b c)) 1) ;=> b
+(list-ref (quote (a b c)) 2) ;=> c
+(list-tail (quote (a b c)) 0) ;=> (a b c)
+(list-tail (quote (a b c)) 2) ;=> (c)
+(list-tail (quote (a b c)) 3) ;=> ()
+(list-tail (quote (a b c . d)) 2) ;=> (c . d)
+(list-tail (quote (a b c . d)) 3) ;=> d
+(let ((x (list 1 2 3))) (eq? (list-tail x 2) (cddr x))) ;=> #t
+
+
+;;; append
+(append (quote (a b c)) (quote ())) ;=> (a b c)
+(append (quote ()) (quote (a b c))) ;=> (a b c)
+(append (quote (a b)) (quote (c d))) ;=> (a b c d)
+(append (quote (a b)) (quote c)) ;=> (a b . c)
+(let ((x (list (quote b)))) (eq? x (cdr (append (quote (a)) x)))) ;=> #t
+
+
+;;; reverse
+(reverse (quote ())) ;=> ()
+(reverse (quote (a b c))) ;=> (c b a)
+
+
+;;; memq, memv, member
+(memq (quote a) (quote (b c a d e))) ;=> (a d e)
+(memq (quote a) (quote (b c d e g))) ;=> #f
+(memq (quote a) (quote (b a c a d a))) ;=> (a c a d a)
+(memv 3.4 (quote (1.2 2.3 3.4 4.5))) ;=> (3.4 4.5)
+(memv 3.4 (quote (1.3 2.5 3.7 4.9))) ;=> #f
+(let ((ls (list (quote a) (quote b) (quote c)))) (set-car! (memv (quote b) ls) (quote z)) ls) ;=> (a z c)
+(member (quote (b)) (quote ((a) (b) (c)))) ;=> ((b) (c))
+(member (quote (d)) (quote ((a) (b) (c)))) ;=> #f
+(member "b" (quote ("a" "b" "c"))) ;=> ("b" "c")
+
+
+;;; memp
+(memp odd? (quote (1 2 3 4))) ;=> (1 2 3 4)
+(memp even? (quote (1 2 3 4))) ;=> (2 3 4)
+(let ((ls (list 1 2 3 4))) (eq? (memp odd? ls) ls)) ;=> #t
+(let ((ls (list 1 2 3 4))) (eq? (memp even? ls) (cdr ls))) ;=> #t
+(memp odd? (quote (2 4 6 8))) ;=> #f
+
+
+;;; remq, remv, remove
+(remq (quote a) (quote (a b a c a d))) ;=> (b c d)
+(remq (quote a) (quote (b c d))) ;=> (b c d)
+(remv 1/2 (quote (1.2 1/2 0.5 3/2 4))) ;=> (1.2 0.5 3/2 4)
+(remove (quote (b)) (quote ((a) (b) (c)))) ;=> ((a) (c))
+
+
+;;; remp
+(remp odd? (quote (1 2 3 4))) ;=> (2 4)
+(remp (lambda (x) (and (> x 0) (< x 10))) (quote (-5 15 3 14 -20 6 0 -9))) ;=> (-5 15 14 -20 0 -9)
+
+
+;;; filter
+(filter odd? (quote (1 2 3 4))) ;=> (1 3)
+(filter (lambda (x) (and (> x 0) (< x 10))) (quote (-5 15 3 14 -20 6 0 -9))) ;=> (3 6)
+
+
+;;; partition
+(let-values (((l1 l2) (partition odd? (quote (1 2 3 4))))) (list l1 l2)) ;=> ((1 3) (2 4))
+(let-values (((l1 l2) (partition (lambda (x) (and (> x 0) (< x 10))) (quote (-5 15 3 14 -20 6 0 -9))))) (list l1 l2)) ;=> ((3 6) (-5 15 14 -20 0 -9))
+
+
+;;; find
+(find odd? (quote (1 2 3 4))) ;=> 1
+(find even? (quote (1 2 3 4))) ;=> 2
+(find odd? (quote (2 4 6 8))) ;=> #f
+(find not (quote (1 a #f 55))) ;=> #f
+
+
+;;; assq, assv, assoc
+(assq (quote b) (quote ((a . 1) (b . 2)))) ;=> (b . 2)
+(cdr (assq (quote b) (quote ((a . 1) (b . 2))))) ;=> 2
+(assq (quote c) (quote ((a . 1) (b . 2)))) ;=> #f
+(assv 2/3 (quote ((1/3 . 1) (2/3 . 2)))) ;=> (2/3 . 2)
+(assv 2/3 (quote ((1/3 . a) (3/4 . b)))) ;=> #f
+(assoc (quote (a)) (quote (((a) . a) (-1 . b)))) ;=> ((a) . a)
+(assoc (quote (a)) (quote (((b) . b) (a . c)))) ;=> #f
+(let ((alist (list (cons 2 (quote a)) (cons 3 (quote b))))) (set-cdr! (assv 3 alist) (quote c)) alist) ;=> ((2 . a) (3 . c))      
+
+
+;;; assp
+(assp odd? (quote ((1 . a) (2 . b)))) ;=> (1 . a)
+(assp even? (quote ((1 . a) (2 . b)))) ;=> (2 . b)
+(let ((ls (list (cons 1 (quote a)) (cons 2 (quote b))))) (eq? (assp odd? ls) (car ls))) ;=> #t
+(let ((ls (list (cons 1 (quote a)) (cons 2 (quote b))))) (eq? (assp even? ls) (cadr ls))) ;=> #t
+(assp odd? (quote ((2 . b)))) ;=> #f
+
+
+;;; list-sort
+(list-sort < (quote (3 4 1 2 5))) ;=> (1 2 3 4 5)
+(list-sort > (quote (0.5 1/2))) ;=> (0.5 1/2)
+(list-sort > (quote (1/2 0.5))) ;=> (1/2 0.5)
+(list->string (list-sort char>? (string->list "hello"))) ;=> "ollhe"
+
+
+# ex04-numbers.ss
+
+;;; exact?
+(exact? 1) ;=> #t
+(exact? -15/16) ;=> #t
+(exact? 2.01) ;=> #f
+(exact? 77.0) ;=> #f
+(exact? 0.6666666666666666) ;=> #f
+(exact? 1.0-2.0i) ;=> #f
+
+
+;;; inexact?
+(inexact? -123) ;=> #f
+(inexact? 123.0) ;=> #t
+(inexact? 1e23) ;=> #t
+(inexact? 0+1i) ;=> #f
+
+
+;;; =, <, >, <= >=
+(= 7 7) ;=> #t
+(= 7 9) ;=> #f
+(< 2000.0 300.0) ;=> #f
+(<= 1 2 3 3 4 5) ;=> #t
+(<= 1 2 3 4 5) ;=> #t
+(> 1 2 2 3 3 4) ;=> #f
+(>= 1 2 2 3 3 4) ;=> #f
+(= -1/2 -0.5) ;=> #t
+(= 2/3 0.667) ;=> #f
+(= 7.2 7.2) ;=> #t
+(= 7.2-3.0i 7) ;=> #f
+(< 1/2 2/3 3/4) ;=> #t
+(> 8 4.102 2/3 -5) ;=> #t
+(let ((x 0.218723452)) (< 0.21 x 0.22)) ;=> #t
+(let ((i 1) (v (vector (quote a) (quote b) (quote c)))) (< -1 i (vector-length v))) ;=> #t
+(apply < (quote (1 2 3 4))) ;=> #t
+(apply > (quote (4 3 3 2))) ;=> #f
+(= +nan.0 +nan.0) ;=> #f
+(< +nan.0 +nan.0) ;=> #f
+(> +nan.0 +nan.0) ;=> #f
+(>= +inf.0 +nan.0) ;=> #f
+(>= +nan.0 -inf.0) ;=> #f
+(> +nan.0 0.0) ;=> #f
+
+
+;;; +
+(+) ;=> 0
+(+ 1 2) ;=> 3
+(+ 1/2 2/3) ;=> 7/6
+(+ 3 4 5) ;=> 12
+(+ 3.0 4) ;=> 7.0
+(+ 3+4i 4+3i) ;=> 7+7i
+(apply + (quote (1 2 3 4 5))) ;=> 15
+
+
+;;; -
+(- 3) ;=> -3
+(- -2/3) ;=> 2/3
+(- 4 3.0) ;=> 1.0
+(- 3.25+4.25i 1/4+1/4i) ;=> 3.0+4.0i
+(- 4 3 2 1) ;=> -2
+
+
+;;; *
+(*) ;=> 1
+(* 3.4) ;=> 3.4
+(* 1 1/2) ;=> 1/2
+(* 3 4 5.5) ;=> 66.0
+(* 1+2i 3+4i) ;=> -5+10i
+(apply * (quote (1 2 3 4 5))) ;=> 120
+
+
+;;; /
+(/ -17) ;=> -1/17
+(/ 1/2) ;=> 2
+(/ 0.5) ;=> 2.0
+(/ 3 4) ;=> 3/4
+(/ 3.0 4) ;=> 0.75
+(/ -5+10i 3+4i) ;=> 1+2i
+(/ 60 5 4 3 2) ;=> 1/2
+
+
+;;; zero?
+(zero? 0) ;=> #t
+(zero? 1) ;=> #f
+(zero? (- 3.0 3.0)) ;=> #t
+(zero? (+ 1/2 1/2)) ;=> #f
+(zero? 0) ;=> #t
+(zero? 0.0-0.0i) ;=> #t
+
+
+;;; positive?
+(positive? 128) ;=> #t
+(positive? 0.0) ;=> #f
+(positive? 1.8e-15) ;=> #t
+(positive? -2/3) ;=> #f
+
+
+;;; negative?
+(negative? -65) ;=> #t
+(negative? 0) ;=> #f
+(negative? -0.0121) ;=> #t
+(negative? 15/16) ;=> #f
+
+
+;;; even?, odd?
+(even? 0) ;=> #t
+(even? 1) ;=> #f
+(even? 2.0) ;=> #t
+(even? -120762398465) ;=> #f
+(odd? 0) ;=> #f
+(odd? 1) ;=> #t
+(odd? 2.0) ;=> #f
+(odd? -120762398465) ;=> #t
+
+
+;;; finite?, infinite?, nan?
+(finite? 2/3) ;=> #t
+(infinite? 2/3) ;=> #f
+(nan? 2/3) ;=> #f
+(finite? 3.1415) ;=> #t
+(infinite? 3.1415) ;=> #f
+(nan? 3.1415) ;=> #f
+(finite? +inf.0) ;=> #f
+(infinite? -inf.0) ;=> #t
+(nan? -inf.0) ;=> #f
+(finite? +nan.0) ;=> #f
+(infinite? +nan.0) ;=> #f
+(nan? +nan.0) ;=> #t
+
+
+;;; quotient, remainder, modulo
+(quotient 45 6) ;=> 7
+(quotient 6.0 2.0) ;=> 3.0
+(quotient 3.0 -2) ;=> -1.0
+(remainder 16 4) ;=> 0
+(remainder 5 2) ;=> 1
+(remainder -45.0 7) ;=> -3.0
+(remainder 10.0 -3.0) ;=> 1.0
+(remainder -17 -9) ;=> -8
+(modulo 16 4) ;=> 0
+(modulo 5 2) ;=> 1
+(modulo -45.0 7) ;=> 4.0
+(modulo 10.0 -3.0) ;=> -2.0
+(modulo -17 -9) ;=> -8
+
+
+;;; div, mod, div-and-mod
+(div 17 3) ;=> 5
+(mod 17 3) ;=> 2
+(div -17 3) ;=> -6
+(mod -17 3) ;=> 1
+(div 17 -3) ;=> -5
+(mod 17 -3) ;=> 2
+(div -17 -3) ;=> 6
+(mod -17 -3) ;=> 1
+(let-values (((d m) (div-and-mod 17.5 3))) (list d m)) ;=> (5.0 2.5)
+
+
+;;; div0, mod0, div0-and-mod0
+(div0 17 3) ;=> 6
+(mod0 17 3) ;=> -1
+(div0 -17 3) ;=> -6
+(mod0 -17 3) ;=> 1
+(div0 17 -3) ;=> -6
+(mod0 17 -3) ;=> -1
+(div0 -17 -3) ;=> 6
+(mod0 -17 -3) ;=> 1
+(let-values (((d m) (div0-and-mod0 17.5 3))) (list d m)) ;=> (6.0 -0.5)
+
+
+;;; truncate
+(truncate 19) ;=> 19
+(truncate 2/3) ;=> 0
+(truncate -2/3) ;=> 0
+(truncate 17.3) ;=> 17.0
+(truncate -17/2) ;=> -8
+
+
+;;; floor
+(floor 19) ;=> 19
+(floor 2/3) ;=> 0
+(floor -2/3) ;=> -1
+(floor 17.3) ;=> 17.0
+(floor -17/2) ;=> -9
+
+
+;;; ceiling
+(ceiling 19) ;=> 19
+(ceiling 2/3) ;=> 1
+(ceiling -2/3) ;=> 0
+(ceiling 17.3) ;=> 18.0
+(ceiling -17/2) ;=> -8
+
+
+;;; round
+(round 19) ;=> 19
+(round 2/3) ;=> 1
+(round -2/3) ;=> -1
+(round 17.3) ;=> 17.0
+(round -17/2) ;=> -8
+(round 2.5) ;=> 2.0
+(round 3.5) ;=> 4.0
+
+
+;;; abs
+(abs 1) ;=> 1
+(abs -3/4) ;=> 3/4
+(abs 1.83) ;=> 1.83
+(abs -0.093) ;=> 0.093
+
+
+;;; max
+(max 4 -7 2 0 -6) ;=> 4
+(max 1/2 3/4 4/5 5/6 6/7) ;=> 6/7
+(max 1.5 1.3 -0.3 0.4 2.0 1.8) ;=> 2.0
+(max 5 2.0) ;=> 5.0
+(max -5 -2.0) ;=> -2.0
+(let ((ls (quote (7 3 5 2 9 8)))) (apply max ls)) ;=> 9
+
+
+;;; min
+(min 4 -7 2 0 -6) ;=> -7
+(min 1/2 3/4 4/5 5/6 6/7) ;=> 1/2
+(min 1.5 1.3 -0.3 0.4 2.0 1.8) ;=> -0.3
+(min 5 2.0) ;=> 2.0
+(min -5 -2.0) ;=> -5.0
+(let ((ls (quote (7 3 5 2 9 8)))) (apply min ls)) ;=> 2
+
+
+;;; gcd
+(gcd) ;=> 0
+(gcd 34) ;=> 34
+(gcd 33.0 15.0) ;=> 3.0
+(gcd 70 -42 28) ;=> 14
+
+
+;;; lcm
+(lcm) ;=> 1
+(lcm 34) ;=> 34
+(lcm 33.0 15.0) ;=> 165.0
+(lcm 70 -42 28) ;=> 420
+(lcm 17.0 0) ;=> 0.0
+
+
+;;; expt
+(expt 2 10) ;=> 1024
+(expt 2 -10) ;=> 1/1024
+(expt 2 -10.0) ;=> 9.765625e-4
+(expt -1/2 5) ;=> -1/32
+(expt 3.0 3) ;=> 27.0
+(expt 0+1i 2) ;=> -1
+
+
+;;; inexact
+(inexact 3) ;=> 3.0
+(inexact 3.0) ;=> 3.0
+(inexact -1/4) ;=> -0.25
+(inexact 3+4i) ;=> 3.0+4.0i
+(inexact (expt 10 20)) ;=> 1e20
+
+
+;;; exact
+(exact 3.0) ;=> 3
+(exact 3) ;=> 3
+(exact -0.25) ;=> -1/4
+(exact 3.0+4.0i) ;=> 3+4i
+(exact 1e20) ;=> 100000000000000000000
+
+
+;;; rationalize
+(rationalize 3/10 1/10) ;=> 1/3
+(rationalize 0.3 1/10) ;=> 0.3333333333333333
+(eqv? (rationalize 0.3 1/10) 0.3333333333333333) ;=> #t
+
+
+;;; numerator, denominator
+(numerator 9) ;=> 9
+(numerator 9.0) ;=> 9.0
+(numerator 0.0) ;=> 0.0
+(numerator 2/3) ;=> 2
+(numerator -9/4) ;=> -9
+(numerator -2.25) ;=> -9.0
+(denominator 9) ;=> 1
+(denominator 9.0) ;=> 1.0
+(denominator 0) ;=> 1
+(denominator 0.0) ;=> 1.0
+(denominator 2/3) ;=> 3
+(denominator -9/4) ;=> 4
+(denominator -2.25) ;=> 4.0
+
+
+;;; make-rectangular, real-part, imag-part
+(make-rectangular -2 7) ;=> -2+7i
+(make-rectangular 2/3 -1/2) ;=> 2/3-1/2i
+(make-rectangular 3.2 5.3) ;=> 3.2+5.3i
+(real-part 3+4i) ;=> 3
+(real-part -2.3+0.7i) ;=> -2.3
+(real-part 0-1i) ;=> 0
+(real-part 17.2) ;=> 17.2
+(real-part -17/100) ;=> -17/100
+(imag-part 3+4i) ;=> 4
+(imag-part -2.3+0.7i) ;=> 0.7
+(imag-part 0-1i) ;=> -1
+(imag-part -2.5) ;=> 0
+(imag-part -17/100) ;=> 0
+
+
+;;; make-polar, angle, magnitude
+(make-polar 2 0) ;=> 2
+(make-polar 2.0 0.0) ;=> 2.0+0.0i
+(make-polar 1.0 (asin -1.0)) ;=> 6.123233995736766e-17-1.0i
+(eqv? (make-polar 7.2 -0.588) 5.990772517368266-3.9938258155739703i) ;=> #t
+(angle -2.681439725442999e-5+7.299999999950752i) ;=> 1.5708
+(angle 5.2) ;=> 0.0
+(magnitude 1) ;=> 1
+(magnitude -3/4) ;=> 3/4
+(magnitude 1.83) ;=> 1.83
+(magnitude -0.093) ;=> 0.093
+(magnitude 3+4i) ;=> 5
+(magnitude -2.663073699926266e-5+7.24999999995109i) ;=> 7.249999999999999
+
+
+;;; sqrt
+(sqrt 16) ;=> 4
+(sqrt 1/4) ;=> 1/2
+(sqrt 4.84) ;=> 2.2
+(sqrt -4.84) ;=> 0.0+2.2i
+(sqrt 3+4i) ;=> 2+1i
+(sqrt -3.0-4.0i) ;=> 1.0-2.0i
+
+
+;;; exact-integer-sqrt
+(let-values (((s r) (exact-integer-sqrt 0))) (list s r)) ;=> (0 0)
+(let-values (((s r) (exact-integer-sqrt 9))) (list s r)) ;=> (3 0)
+(let-values (((s r) (exact-integer-sqrt 19))) (list s r)) ;=> (4 3)
+
+
+;;; exp
+(exp 0.0) ;=> 1.0
+(exp 1.0) ;=> 2.718281828459045
+(exp -0.5) ;=> 0.6065306597126334
+
+
+;;; log
+(log 1.0) ;=> 0.0
+(log (exp 1.0)) ;=> 1.0
+(/ (log 100) (log 10)) ;=> 2.0
+(log (make-polar (exp 2.0) 1.0)) ;=> 2.0+0.9999999999999999i
+(log 100.0 10.0) ;=> 2.0
+(log 0.125 2.0) ;=> -3.0
+
+
+;;; sin, cos, tan
+(sin 0.0) ;=> 0.0
+(cos 0.0) ;=> 1.0
+(tan 0.0) ;=> 0.0
+
+
+;;; bitwise-not, bitwise-and, bitwise-ior, bitwise-xor
+(bitwise-not 0) ;=> -1
+(bitwise-not 3) ;=> -4
+(bitwise-and 13 7) ;=> 5
+(bitwise-ior 13 7) ;=> 15
+(bitwise-xor 13 7) ;=> 10
+
+
+;;; bitwise-if
+(bitwise-if 42 56 12) ;=> 44
+
+
+;;; bitwise-bit-count
+(bitwise-bit-count 0) ;=> 0
+(bitwise-bit-count 1) ;=> 1
+(bitwise-bit-count 4) ;=> 1
+(bitwise-bit-count 21) ;=> 3
+(bitwise-bit-count -1) ;=> -1
+(bitwise-bit-count -2) ;=> -2
+(bitwise-bit-count -4) ;=> -3
+
+
+;;; bitwise-length
+(bitwise-length 0) ;=> 0
+(bitwise-length 1) ;=> 1
+(bitwise-length 4) ;=> 3
+(bitwise-length 6) ;=> 3
+(bitwise-length -1) ;=> 0
+(bitwise-length -6) ;=> 3
+(bitwise-length -9) ;=> 4
+
+
+;;; bitwise-first-bit-set
+(bitwise-first-bit-set 0) ;=> -1
+(bitwise-first-bit-set 1) ;=> 0
+(bitwise-first-bit-set 12) ;=> 2
+(bitwise-first-bit-set -1) ;=> 0
+(bitwise-first-bit-set -2) ;=> 1
+(bitwise-first-bit-set -3) ;=> 0
+
+
+;;; bitwise-bit-set?
+(bitwise-bit-set? 11 0) ;=> #t
+(bitwise-bit-set? 11 2) ;=> #f
+(bitwise-bit-set? -1 0) ;=> #t
+(bitwise-bit-set? -1 20) ;=> #t
+(bitwise-bit-set? -3 1) ;=> #f
+(bitwise-bit-set? 0 5000) ;=> #f
+(bitwise-bit-set? -1 5000) ;=> #t
+
+
+;;; bitwise-copy-bit
+(bitwise-copy-bit 14 0 1) ;=> 15
+(bitwise-copy-bit 14 2 0) ;=> 10
+
+
+;;; bitwise-bit-field
+(bitwise-bit-field 22 0 3) ;=> 6
+(bitwise-bit-field 22 1 3) ;=> 3
+(bitwise-bit-field 22 2 3) ;=> 1
+(bitwise-bit-field 22 3 3) ;=> 0
+
+
+;;; bitwise-copy-bit-field
+(bitwise-copy-bit-field 16 0 3 21) ;=> 21
+(bitwise-copy-bit-field 16 1 3 21) ;=> 18
+(bitwise-copy-bit-field 16 2 3 21) ;=> 20
+(bitwise-copy-bit-field 16 3 3 21) ;=> 16
+
+
+;;; bitwise-arithmetic-shift-right, bitwise-arithmetic-shift-left
+(bitwise-arithmetic-shift-right 16 3) ;=> 2
+(bitwise-arithmetic-shift-right -1 1) ;=> -1
+(bitwise-arithmetic-shift-right -64 3) ;=> -8
+(bitwise-arithmetic-shift-left 2 2) ;=> 8
+(bitwise-arithmetic-shift-left -1 2) ;=> -4
+
+
+;;; bitwise-arithmetic-shift
+(bitwise-arithmetic-shift 16 -3) ;=> 2
+(bitwise-arithmetic-shift -1 -1) ;=> -1
+(bitwise-arithmetic-shift -64 -3) ;=> -8
+(bitwise-arithmetic-shift 2 2) ;=> 8
+(bitwise-arithmetic-shift -1 2) ;=> -4
+
+
+;;; bitwise-rotate-bit-field
+(bitwise-rotate-bit-field 26 0 5 3) ;=> 22
+(bitwise-rotate-bit-field 107 2 7 3) ;=> 91
+
+
+;;; bitwise-reverse-bit-field
+(bitwise-reverse-bit-field 26 0 5) ;=> 11
+(bitwise-reverse-bit-field 107 2 7) ;=> 47
+
+
+;;; string->number
+(string->number "0") ;=> 0
+(string->number "3.4e3") ;=> 3400.0
+(string->number "#x#e-2e2") ;=> -738
+(string->number "#e-2e2" 16) ;=> -738
+(string->number "#i15/16") ;=> 0.9375
+(string->number "10" 16) ;=> 16
+
+
+;;; number->string
+(number->string 3.4) ;=> "3.4"
+(number->string 100.0) ;=> "100.0"
+(number->string 1e-23) ;=> "1e-23"
+(number->string -7/2) ;=> "-7/2"
+(number->string 220/9 16) ;=> "DC/9"
+
+# ex05-fixnums.ss
+
+;;; fixnum?
+(fixnum? 0) ;=> #t
+(fixnum? -1) ;=> #t
+(fixnum? (- (expt 2 23))) ;=> #t
+(fixnum? (- (expt 2 23) 1)) ;=> #t
+
+
+;;; least-fixnum, greatest-fixnum
+(fixnum? (- (least-fixnum) 1)) ;=> #f
+(fixnum? (least-fixnum)) ;=> #t
+(fixnum? (greatest-fixnum)) ;=> #t
+(fixnum? (+ (greatest-fixnum) 1)) ;=> #f
+
+
+;;; fixnum-width
+(= (least-fixnum) (- (expt 2 (- w 1)))) ;=> #t     
+(= (greatest-fixnum) (- (expt 2 (- w 1)) 1)) ;=> #t
+(>= w 24) ;=> #t
+
+
+;;; fx=?, fx<?, fx>?, fx<=?, fx>=?
+(fx=? 0 0) ;=> #t
+(fx=? -1 1) ;=> #f
+(fx<? (least-fixnum) 0 (greatest-fixnum)) ;=> #t
+(let ((x 3)) (fx<=? 0 x 9)) ;=> #t
+(fx>? 5 4 3 2 1) ;=> #t
+(fx<=? 1 3 2) ;=> #f
+(fx>=? 0 0 (least-fixnum)) ;=> #t
+
+
+;;; fxzero?, fxpositive?, fxnegative?
+(fxzero? 0) ;=> #t
+(fxzero? 1) ;=> #f
+(fxpositive? 128) ;=> #t
+(fxpositive? 0) ;=> #f
+(fxpositive? -1) ;=> #f
+(fxnegative? -65) ;=> #t
+(fxnegative? 0) ;=> #f
+(fxnegative? 1) ;=> #f
+
+
+;;; fxeven?, fxodd?
+(fxeven? 0) ;=> #t
+(fxeven? 1) ;=> #f
+(fxeven? -1) ;=> #f
+(fxeven? -10) ;=> #t
+(fxodd? 0) ;=> #f
+(fxodd? 1) ;=> #t
+(fxodd? -1) ;=> #t
+(fxodd? -10) ;=> #f
+
+
+;;; fxmin, fxmax
+(fxmin 4 -7 2 0 -6) ;=> -7
+(let ((ls (quote (7 3 5 2 9 8)))) (apply fxmin ls)) ;=> 2
+(fxmax 4 -7 2 0 -6) ;=> 4
+(let ((ls (quote (7 3 5 2 9 8)))) (apply fxmax ls)) ;=> 9
+
+
+;;; fx+, fx-, fx*
+(fx+ -3 4) ;=> 1
+(fx- 3) ;=> -3
+(fx- -3 4) ;=> -7
+(fx* -3 4) ;=> -12
+
+
+;;; fxdiv, fxmod, fxdiv-and-mod
+(fxdiv 17 3) ;=> 5
+(fxmod 17 3) ;=> 2
+(fxdiv -17 3) ;=> -6
+(fxmod -17 3) ;=> 1
+(fxdiv 17 -3) ;=> -5
+(fxmod 17 -3) ;=> 2
+(fxdiv -17 -3) ;=> 6
+(fxmod -17 -3) ;=> 1
+(let-values (((d m) (fxdiv-and-mod 17 3))) (list d m)) ;=> (5 2)
+
+
+;;; fxdiv0, fxmod0, fxdiv0-and-mod0
+(fxdiv0 17 3) ;=> 6
+(fxmod0 17 3) ;=> -1
+(fxdiv0 -17 3) ;=> -6
+(fxmod0 -17 3) ;=> 1
+(fxdiv0 17 -3) ;=> -6
+(fxmod0 17 -3) ;=> -1
+(fxdiv0 -17 -3) ;=> 6
+(fxmod0 -17 -3) ;=> 1
+(let-values (((d m) (fxdiv0-and-mod0 17 3))) (list d m)) ;=> (6 -1)
+
+
+;;; fxnot, fxand, fxior
+(fxnot 0) ;=> -1
+(fxnot 3) ;=> -4
+(fxand 13 7) ;=> 5
+(fxior 13 7) ;=> 15
+(fxxor 13 7) ;=> 10
+
+
+;;; fxif
+(fxif 42 56 12) ;=> 44
+
+
+;;; fxbit-count
+(fxbit-count 0) ;=> 0
+(fxbit-count 1) ;=> 1
+(fxbit-count 4) ;=> 1
+(fxbit-count 21) ;=> 3
+(fxbit-count -1) ;=> -1
+(fxbit-count -2) ;=> -2
+(fxbit-count -4) ;=> -3
+
+
+;;; fxlength
+(fxlength 0) ;=> 0
+(fxlength 1) ;=> 1
+(fxlength 4) ;=> 3
+(fxlength 6) ;=> 3
+(fxlength -1) ;=> 0
+(fxlength -6) ;=> 3
+(fxlength -9) ;=> 4
+
+
+;;; fxfirst-bit-set
+(fxfirst-bit-set 0) ;=> -1
+(fxfirst-bit-set 1) ;=> 0
+(fxfirst-bit-set 12) ;=> 2
+(fxfirst-bit-set -1) ;=> 0
+(fxfirst-bit-set -2) ;=> 1
+(fxfirst-bit-set -3) ;=> 0
+
+
+;;; fxbit-set?
+(fxbit-set? 11 0) ;=> #t
+(fxbit-set? 11 2) ;=> #f
+(fxbit-set? -1 0) ;=> #t
+(fxbit-set? -1 20) ;=> #t
+(fxbit-set? -3 1) ;=> #f
+(fxbit-set? 0 (- (fixnum-width) 1)) ;=> #f
+(fxbit-set? -1 (- (fixnum-width) 1)) ;=> #t
+
+
+;;; fxcopy-bit
+(fxcopy-bit 14 0 1) ;=> 15
+(fxcopy-bit 14 2 0) ;=> 10
+
+
+;;; fxbit-field
+(fxbit-field 22 0 3) ;=> 6
+(fxbit-field 22 1 3) ;=> 3
+(fxbit-field 22 2 3) ;=> 1
+(fxbit-field 22 3 3) ;=> 0
+
+
+;;; fxcopy-bit-field
+(fxcopy-bit-field 16 0 3 21) ;=> 21
+(fxcopy-bit-field 16 1 3 21) ;=> 18
+(fxcopy-bit-field 16 2 3 21) ;=> 20
+(fxcopy-bit-field 16 3 3 21) ;=> 16
+
+
+;;; fxarithmetic-shift-right, fxarithmetic-shift-left
+(fxarithmetic-shift-right 16 3) ;=> 2
+(fxarithmetic-shift-right -1 1) ;=> -1
+(fxarithmetic-shift-right -64 3) ;=> -8
+(fxarithmetic-shift-left 2 2) ;=> 8
+(fxarithmetic-shift-left -1 2) ;=> -4
+
+
+;;; fxarithmetic-shift
+(fxarithmetic-shift 16 -3) ;=> 2
+(fxarithmetic-shift -1 -1) ;=> -1
+(fxarithmetic-shift -64 -3) ;=> -8
+(fxarithmetic-shift 2 2) ;=> 8
+(fxarithmetic-shift -1 2) ;=> -4
+
+
+;;; fxrotate-bit-field
+(fxrotate-bit-field 26 0 5 3) ;=> 22
+(fxrotate-bit-field 107 2 7 3) ;=> 91
+
+
+;;; fxreverse-bit-field
+(fxreverse-bit-field 26 0 5) ;=> 11
+(fxreverse-bit-field 107 2 7) ;=> 47
+
+# ex06-flonums.ss
+
+;;; flonum?
+(flonum? 0) ;=> #f
+(flonum? 3/4) ;=> #f
+(flonum? 3.5) ;=> #t
+(flonum? 0.02) ;=> #t
+(flonum? 1e10) ;=> #t
+(flonum? 3.0+0.0i) ;=> #f
+
+
+;;; fl=?, fl<?, fl>?, fl<=?, fl>=?
+(fl=? 0.0 0.0) ;=> #t
+(fl<? -1.0 0.0 1.0) ;=> #t        
+(fl>? -1.0 0.0 1.0) ;=> #f        
+(fl<=? 0.0 3.0 3.0) ;=> #t        
+(fl>=? 4.0 3.0 3.0) ;=> #t        
+(fl<? 7.0 +inf.0) ;=> #t
+(fl=? +nan.0 0.0) ;=> #f
+(fl=? +nan.0 +nan.0) ;=> #f       
+(fl<? +nan.0 +nan.0) ;=> #f       
+(fl<=? +nan.0 +inf.0) ;=> #f      
+(fl>=? +nan.0 +inf.0) ;=> #f
+
+
+;;; flzero?, flpositive?, flnegative?
+(flzero? 0.0) ;=> #t
+(flzero? 1.0) ;=> #f
+(flpositive? 128.0) ;=> #t
+(flpositive? 0.0) ;=> #f
+(flpositive? -1.0) ;=> #f
+(flnegative? -65.0) ;=> #t
+(flnegative? 0.0) ;=> #f
+(flnegative? 1.0) ;=> #f
+(flzero? -0.0) ;=> #t
+(flnegative? -0.0) ;=> #f
+(flnegative? +nan.0) ;=> #f
+(flzero? +nan.0) ;=> #f
+(flpositive? +nan.0) ;=> #f
+(flnegative? +inf.0) ;=> #f
+(flnegative? -inf.0) ;=> #t
+
+
+;;; flinteger?
+(flinteger? 0.0) ;=> #t
+(flinteger? -17.0) ;=> #t
+(flinteger? +nan.0) ;=> #f
+(flinteger? +inf.0) ;=> #f
+
+
+;;; flfinite?, flinfinite?, flnan?
+(flfinite? 3.1415) ;=> #t
+(flinfinite? 3.1415) ;=> #f
+(flnan? 3.1415) ;=> #f
+(flfinite? +inf.0) ;=> #f
+(flinfinite? -inf.0) ;=> #t
+(flnan? -inf.0) ;=> #f
+(flfinite? +nan.0) ;=> #f
+(flinfinite? +nan.0) ;=> #f
+(flnan? +nan.0) ;=> #t
+
+
+;;; fleven?, flodd?
+(fleven? 0.0) ;=> #t
+(fleven? 1.0) ;=> #f
+(fleven? -1.0) ;=> #f
+(fleven? -10.0) ;=> #t
+(flodd? 0.0) ;=> #f
+(flodd? 1.0) ;=> #t
+(flodd? -1.0) ;=> #t
+(flodd? -10.0) ;=> #f
+
+
+;;; flmin, flmax
+(flmin 4.2 -7.5 2.0 0.0 -6.4) ;=> -7.5
+(let ((ls (quote (7.1 3.5 5.0 2.6 2.6 8.0)))) (apply flmin ls)) ;=> 2.6
+(flmax 4.2 -7.5 2.0 0.0 -6.4) ;=> 4.2
+(let ((ls (quote (7.1 3.5 5.0 2.6 2.6 8.0)))) (apply flmax ls)) ;=> 8.0
+
+
+;;; fl+, fl-, fl*, fl/
+(fl+) ;=> 0.0
+(fl+ 1.0 2.5) ;=> 3.5
+(fl+ 3.0 4.25 5.0) ;=> 12.25
+(apply fl+ (quote (1.0 2.0 3.0 4.0 5.0))) ;=> 15.0
+(fl- 0.0) ;=> -0.0
+(fl- 3.0) ;=> -3.0
+(fl- 4.0 3.0) ;=> 1.0
+(fl- 4.0 3.0 2.0 1.0) ;=> -2.0
+(fl*) ;=> 1.0
+(fl* 1.5 2.5) ;=> 3.75
+(fl* 3.0 -4.0 5.0) ;=> -60.0
+(apply fl* (quote (1.0 -2.0 3.0 -4.0 5.0))) ;=> 120.0
+(fl/ -4.0) ;=> -0.25
+(fl/ 8.0 -2.0) ;=> -4.0
+(fl/ -9.0 2.0) ;=> -4.5
+(fl/ 60.0 5.0 3.0 2.0) ;=> 2.0
+
+
+;;; fldiv, flmod, fldiv-and-mod
+(fldiv 17.0 3.0) ;=> 5.0
+(flmod 17.0 3.0) ;=> 2.0
+(fldiv -17.0 3.0) ;=> -6.0
+(flmod -17.0 3.0) ;=> 1.0
+(fldiv 17.0 -3.0) ;=> -5.0
+(flmod 17.0 -3.0) ;=> 2.0
+(fldiv -17.0 -3.0) ;=> 6.0
+(flmod -17.0 -3.0) ;=> 1.0
+(let-values (((d m) (fldiv-and-mod 17.5 3.75))) (list d m)) ;=> (4.0 2.5)
+
+
+;;; fldiv0, flmod0, fldiv0-and-mod0
+(fldiv0 17.0 3.0) ;=> 6.0
+(flmod0 17.0 3.0) ;=> -1.0
+(fldiv0 -17.0 3.0) ;=> -6.0
+(flmod0 -17.0 3.0) ;=> 1.0
+(fldiv0 17.0 -3.0) ;=> -6.0
+(flmod0 17.0 -3.0) ;=> -1.0
+(fldiv0 -17.0 -3.0) ;=> 6.0
+(flmod0 -17.0 -3.0) ;=> 1.0
+(let-values (((d m) (fldiv0-and-mod0 17.5 3.75))) (list d m)) ;=> (5.0 -1.25)
+
+
+;;; flround, fltruncate, flfloor, flceiling
+(flround 17.3) ;=> 17.0
+(flround -17.3) ;=> -17.0
+(flround 2.5) ;=> 2.0
+(flround 3.5) ;=> 4.0
+(fltruncate 17.3) ;=> 17.0
+(fltruncate -17.3) ;=> -17.0
+(flfloor 17.3) ;=> 17.0
+(flfloor -17.3) ;=> -18.0
+(flceiling 17.3) ;=> 18.0
+(flceiling -17.3) ;=> -17.0
+
+
+;;; flnumerator, fldenominator
+(flnumerator -9.0) ;=> -9.0
+(fldenominator -9.0) ;=> 1.0
+(flnumerator 0.0) ;=> 0.0
+(fldenominator 0.0) ;=> 1.0
+(flnumerator -inf.0) ;=> -inf.0
+(fldenominator -inf.0) ;=> 1.0
+
+
+;;; flabs
+(flabs 3.2) ;=> 3.2
+(flabs -2e-20) ;=> 2e-20
+
+
+;;; flexp, fllog
+(flexp 0.0) ;=> 1.0
+(flexp 1.0) ;=> 2.718281828459045
+(fllog 1.0) ;=> 0.0
+(fllog (exp 1.0)) ;=> 1.0
+(fl/ (fllog 100.0) (fllog 10.0)) ;=> 2.0
+(fllog 100.0 10.0) ;=> 2.0
+(fllog 0.125 2.0) ;=> -3.0
+
+
+;;; flsqrt
+(flsqrt 4.0) ;=> 2.0
+(flsqrt 0.0) ;=> 0.0
+(flsqrt -0.0) ;=> -0.0
+
+
+;;; flexpt
+(flexpt 3.0 2.0) ;=> 9.0
+(flexpt 0.0 +inf.0) ;=> 0.0
+
+
+;;; fixnum->flonum, real->flonum
+(fixnum->flonum 0) ;=> 0.0
+(fixnum->flonum 13) ;=> 13.0
+(real->flonum -1/2) ;=> -0.5
+(real->flonum 1000.0) ;=> 1000.0
+
+
+# ex07-characters.ss
+
+;;; comparison
+(char>? #\a #\b) ;=> #f
+(char<? #\a #\b) ;=> #t
+(char<? #\a #\b #\c) ;=> #t
+(let ((c #\r)) (char<=? #\a c #\z)) ;=> #t
+(char<=? #\Z #\W) ;=> #f
+(char=? #\+ #\+) ;=> #t
+
+
+;;; comparison case-insensitive
+(char-ci<? #\a #\B) ;=> #t
+(char-ci=? #\W #\w) ;=> #t
+(char-ci=? #\= #\+) ;=> #f
+(let ((c #\R)) (list (char<=? #\a c #\z) (char-ci<=? #\a c #\z))) ;=> (#f #t)
+
+
+;;; character kind
+(char-alphabetic? #\a) ;=> #t
+(char-alphabetic? #\T) ;=> #t
+(char-alphabetic? #\8) ;=> #f
+(char-alphabetic? #\$) ;=> #f
+(char-numeric? #\7) ;=> #t
+(char-numeric? #\2) ;=> #t
+(char-numeric? #\X) ;=> #f
+(char-numeric? #\space) ;=> #f
+(char-whitespace? #\space) ;=> #t
+(char-whitespace? #\newline) ;=> #t
+(char-whitespace? #\Z) ;=> #f
+
+
+;;; case predicate
+(char-lower-case? #\r) ;=> #t
+(char-lower-case? #\R) ;=> #f
+(char-upper-case? #\r) ;=> #f
+(char-upper-case? #\R) ;=> #t
+(char-title-case? #\I) ;=> #f
+(char-title-case? #\ǅ) ;=> #t
+
+
+;;; character category
+(char-general-category #\a) ;=> Ll
+(char-general-category #\space) ;=> Zs
+(char-general-category #\􏿿) ;=> Cn
+
+
+;;; case conversion
+(char-upcase #\g) ;=> #\G
+(char-upcase #\G) ;=> #\G
+(char-upcase #\7) ;=> #\7
+(char-upcase #\ς) ;=> #\Σ
+(char-downcase #\g) ;=> #\g
+(char-downcase #\G) ;=> #\g
+(char-downcase #\7) ;=> #\7
+(char-downcase #\ς) ;=> #\ς
+(char-titlecase #\g) ;=> #\G
+(char-titlecase #\G) ;=> #\G
+(char-titlecase #\7) ;=> #\7
+(char-titlecase #\ς) ;=> #\Σ
+(char-foldcase #\g) ;=> #\g
+(char-foldcase #\G) ;=> #\g
+(char-foldcase #\7) ;=> #\7
+(char-foldcase #\ς) ;=> #\σ
+
+
+;;; from/to integer conversion
+(char->integer #\newline) ;=> 10
+(char->integer #\space) ;=> 32
+(- (char->integer #\Z) (char->integer #\A)) ;=> 25
+(integer->char 48) ;=> #\0
+(integer->char 955) ;=> #\λ
+
+# ex08-strings.ss
+
+;;; comparison
+(string=? "mom" "mom") ;=> #t
+(string<? "mom" "mommy") ;=> #t
+(string>? "Dad" "Dad") ;=> #f
+(string=? "Mom and Dad" "mom and dad") ;=> #f   
+(string<? "a" "b" "c") ;=> #t
+
+
+;;; comparison case-insensitive
+(string-ci=? "Mom and Dad" "mom and dad") ;=> #t
+(string-ci<=? "say what" "Say What!?") ;=> #t   
+(string-ci>? "N" "m" "L" "k") ;=> #t
+(string-ci=? "Straße" "Strasse") ;=> #t
+
+
+;;; construction
+(string) ;=> ""
+(string #\a #\b #\c) ;=> "abc"
+(string #\H #\E #\Y #\!) ;=> "HEY!"
+(make-string 0) ;=> ""
+(make-string 0 #\x) ;=> ""
+(make-string 5 #\x) ;=> "xxxxx"
+
+
+;;; string-length
+(string-length "abc") ;=> 3
+(string-length "") ;=> 0
+(string-length "hi there") ;=> 8
+(string-length (make-string 1000000)) ;=> 1000000
+
+
+;;; string-ref, string-set!
+(string-ref "hi there" 0) ;=> #\h
+(string-ref "hi there" 5) ;=> #\e
+(let ((str (string-copy "hi three"))) (string-set! str 5 #\e) (string-set! str 6 #\r) str) ;=> "hi there"
+
+
+;;; string-copy
+(string-copy "abc") ;=> "abc"
+(let ((str "abc")) (eq? str (string-copy str))) ;=> #f
+
+
+;;; string-append
+(string-append) ;=> ""
+(string-append "abc" "def") ;=> "abcdef"
+(string-append "Hey " "you " "there!") ;=> "Hey you there!"
+
+
+;;; substring
+(substring "hi there" 0 1) ;=> "h"
+(substring "hi there" 3 6) ;=> "the"
+(substring "hi there" 5 5) ;=> ""
+(let ((str "hi there")) (let ((end (string-length str))) (substring str 0 end))) ;=> "hi there"
+
+
+;;; string-fill!
+(let ((str (string-copy "sleepy"))) (string-fill! str #\Z) str) ;=> "ZZZZZZ"
+
+
+;;; conversion
+(string-upcase "Hi") ;=> "HI"
+(string-downcase "Hi") ;=> "hi"
+(string-foldcase "Hi") ;=> "hi"
+(string-upcase "Straße") ;=> "STRASSE"
+(string-downcase "Straße") ;=> "straße"
+(string-foldcase "Straße") ;=> "strasse"
+(string-downcase "STRASSE") ;=> "strasse"
+(string-downcase "Σ") ;=> "σ"
+(string-titlecase "kNock KNoCK") ;=> "Knock Knock"
+(string-titlecase "who's there?") ;=> "Who's There?"
+(string-titlecase "r6rs") ;=> "R6rs"
+(string-titlecase "R6RS") ;=> "R6rs"
+
+
+;;; normalize
+(string-normalize-nfd "é") ;=> "é"
+(string-normalize-nfc "é") ;=> "é"
+(string-normalize-nfd "é") ;=> "é"
+(string-normalize-nfc "é") ;=> "é"
+
+
+;;; from/to list
+(string->list "") ;=> ()
+(string->list "abc") ;=> (#\a #\b #\c)
+(apply char<? (string->list "abc")) ;=> #t
+(map char-upcase (string->list "abc")) ;=> (#\A #\B #\C)
+(list->string (quote ())) ;=> ""
+(list->string (quote (#\a #\b #\c))) ;=> "abc"
+(list->string (map char-upcase (string->list "abc"))) ;=> "ABC"
+
+# ex09-vectors.ss
+
+;;; construction
+(vector) ;=> #()
+(vector (quote a) (quote b) (quote c)) ;=> #(a b c)
+(make-vector 0) ;=> #()
+(make-vector 0 (quote #(a))) ;=> #()
+(make-vector 5 (quote #(a))) ;=> #(#(a) #(a) #(a) #(a) #(a)) 
+
+
+;;; vector-length
+(vector-length (quote #())) ;=> 0
+(vector-length (quote #(a b c))) ;=> 3
+(vector-length (vector 1 (quote (2)) 3 (quote #(4 5)))) ;=> 4
+(vector-length (make-vector 300)) ;=> 300
+
+
+;;; vector-ref
+(vector-ref (quote #(a b c)) 0) ;=> a
+(vector-ref (quote #(a b c)) 1) ;=> b
+(vector-ref (quote #(x y z w)) 3) ;=> w
+
+
+;;; vector-set!
+(let ((v (vector (quote a) (quote b) (quote c) (quote d) (quote e)))) (vector-set! v 2 (quote x)) v) ;=> #(a b x d e)
+
+
+;;; vector-fill!
+(let ((v (vector 1 2 3))) (vector-fill! v 0) v) ;=> #(0 0 0)
+
+
+;;; from/to list conversion
+(vector->list (vector)) ;=> ()
+(vector->list (quote #(a b c))) ;=> (a b c)
+(let ((v (quote #(1 2 3 4 5)))) (apply * (vector->list v))) ;=> 120
+(list->vector (quote ())) ;=> #()
+(list->vector (quote (a b c))) ;=> #(a b c)
+(let ((v (quote #(1 2 3 4 5)))) (let ((ls (vector->list v))) (list->vector (map * ls ls)))) ;=> #(1 4 9 16 25)
+
+
+;;; vector-sort!
+(vector-sort < (quote #(3 4 2 1 2 5))) ;=> #(1 2 2 3 4 5)
+(vector-sort > (quote #(0.5 1/2))) ;=> #(0.5 1/2)
+(vector-sort > (quote #(1/2 0.5))) ;=> #(1/2 0.5)
+(let ((v (vector 3 4 2 1 2 5))) (vector-sort! < v) v) ;=> #(1 2 2 3 4 5)
+
+# ex10-bytevectors.ss
+
+;;; endianness
+(endianness little) ;=> little      
+(endianness big) ;=> big
+(symbol? (native-endianness)) ;=> #t
+
+
+;;; make-bytevector
+(make-bytevector 0) ;=> #vu8()
+(make-bytevector 0 7) ;=> #vu8()
+(make-bytevector 5 7) ;=> #vu8(7 7 7 7 7)
+(make-bytevector 5 -7) ;=> #vu8(249 249 249 249 249)
+
+
+;;; bytevector-length
+(bytevector-length #vu8()) ;=> 0
+(bytevector-length #vu8(1 2 3)) ;=> 3
+(bytevector-length (make-bytevector 300)) ;=> 300
+
+
+;;; bytevector=?
+(bytevector=? #vu8() #vu8()) ;=> #t
+(bytevector=? (make-bytevector 3 0) #vu8(0 0 0)) ;=> #t
+(bytevector=? (make-bytevector 5 0) #vu8(0 0 0)) ;=> #f
+(bytevector=? #vu8(1 127 128 255) #vu8(255 128 127 1)) ;=> #f
+
+
+;;; bytevector-fill!
+(let ((v (make-bytevector 6))) (bytevector-fill! v 255) v) ;=> #vu8(255 255 255 255 255 255)
+(let ((v (make-bytevector 6))) (bytevector-fill! v -128) v) ;=> #vu8(128 128 128 128 128 128)
+
+
+;;; bytevector-copy
+(bytevector-copy #vu8(1 127 128 255)) ;=> #vu8(1 127 128 255)
+(let ((v #vu8(1 127 128 255))) (eq? v (bytevector-copy v))) ;=> #f
+
+
+;;;
+v2 ;=> #vu8(0 95 127 159 191 0 0 0 0 0)
+
+v2 ;=> #vu8(0 95 127 159 191 0 0 191 223 255)
+
+v2 ;=> #vu8(159 191 0 0 191 223 0 191 223 255)
+
+v2 ;=> #vu8(159 159 191 0 0 191 223 0 191 223)
+
+
+;;; ref: u8, s8
+(bytevector-u8-ref #vu8(1 127 128 255) 0) ;=> 1
+(bytevector-u8-ref #vu8(1 127 128 255) 2) ;=> 128
+(bytevector-u8-ref #vu8(1 127 128 255) 3) ;=> 255
+(bytevector-s8-ref #vu8(1 127 128 255) 0) ;=> 1
+(bytevector-s8-ref #vu8(1 127 128 255) 1) ;=> 127
+(bytevector-s8-ref #vu8(1 127 128 255) 2) ;=> -128
+(bytevector-s8-ref #vu8(1 127 128 255) 3) ;=> -1
+
+
+;;; set!: u8, s8
+(let ((v (make-bytevector 5 -1))) (bytevector-u8-set! v 2 128) v) ;=> #vu8(255 255 128 255 255)
+(let ((v (make-bytevector 4 0))) (bytevector-s8-set! v 1 100) (bytevector-s8-set! v 2 -100) v) ;=> #vu8(0 100 156 0)
+
+
+;;; u8-list
+(bytevector->u8-list (make-bytevector 0)) ;=> ()
+(bytevector->u8-list #vu8(1 127 128 255)) ;=> (1 127 128 255)
+(let ((v #vu8(1 2 3 255))) (apply * (bytevector->u8-list v))) ;=> 1530
+(u8-list->bytevector (quote ())) ;=> #vu8()
+(u8-list->bytevector (quote (1 127 128 255))) ;=> #vu8(1 127 128 255)
+(let ((v #vu8(1 2 3 4 5))) (let ((ls (bytevector->u8-list v))) (u8-list->bytevector (map * ls ls)))) ;=> #vu8(1 4 9 16 25)       
+
+
+;;; ref: u16, s16, u32, s32, u64, s64
+(bytevector-u16-native-ref v 2) ;=> 22270
+(bytevector-s16-native-ref v 2) ;=> 22270
+(bytevector-s16-native-ref v 6) ;=> -26504
+(bytevector-u32-native-ref v 0) ;=> 1459500050
+(bytevector-s32-native-ref v 0) ;=> 1459500050
+(bytevector-s32-native-ref v 4) ;=> -1736918308
+(bytevector-u64-native-ref v 0) ;=> 10986736746485396498
+(bytevector-s64-native-ref v 0) ;=> -7460007327224155118
+
+
+;;; set!: u16, s16, u32, s32, u64, s64
+v ;=> #vu8(86 254 86 254 152 120 0 0)
+
+v ;=> #vu8(86 254 52 18 86 254 52 18 152 120 186 220 0 0 0 0)
+
+v ;=> #vu8(152 120 186 220 86 254 52 18 152 120 186 220 86 254 52 18 18 52 254 86 220 186 120 152)
+
+
+;;; ref with eness: u16, s16, u32, s32, u64, s64
+(bytevector-u16-ref v 0 (endianness big)) ;=> 4660
+(bytevector-s16-ref v 1 (endianness big)) ;=> 13566
+(bytevector-s16-ref v 5 (endianness big)) ;=> -17800
+(bytevector-u32-ref v 2 (quote big)) ;=> 4267105466
+(bytevector-s32-ref v 3 (quote big)) ;=> 1457306232
+(bytevector-s32-ref v 4 (quote big)) ;=> -591759208
+(bytevector-u64-ref v 0 (quote big)) ;=> 1311953040495507608
+(bytevector-s64-ref v 1 (quote big)) ;=> 3818585040078018714
+(bytevector-u16-ref v 0 (endianness little)) ;=> 13330
+(bytevector-s16-ref v 1 (endianness little)) ;=> -460
+(bytevector-s16-ref v 5 (endianness little)) ;=> 30906
+(bytevector-u32-ref v 2 (quote little)) ;=> 3135002366
+(bytevector-s32-ref v 3 (quote little)) ;=> 2025512022
+(bytevector-s32-ref v 4 (quote little)) ;=> -1736918308
+(bytevector-u64-ref v 0 (quote little)) ;=> 10986736746485396498
+(bytevector-s64-ref v 1 (quote little)) ;=> -7306957651452690892
+
+
+;;; set! with eness: u16, s16, u32, s32, u64, s64
+v ;=> #vu8(254 86 0 86 254 120 152 0)
+
+v ;=> #vu8(86 254 52 18 0 0 18 52 254 86 0 152 120 186 220 0)
+
+v ;=> #vu8(152 120 186 220 86 254 52 18 0 0 18 52 254 86 220 186 120 152 0 152 120 186 220 86 254 52 18 0)
+
+
+;;; ref: uint, sint
+(bytevector-uint-ref v 0 (quote big) 1) ;=> 18
+(bytevector-uint-ref v 0 (quote little) 1) ;=> 18
+(bytevector-uint-ref v 1 (quote big) 3) ;=> 3472982
+(bytevector-uint-ref v 2 (quote little) 7) ;=> 43514790711940862
+(bytevector-sint-ref v 2 (quote big) 1) ;=> -2
+(bytevector-sint-ref v 1 (quote little) 6) ;=> 132743955938868
+(bytevector-sint-ref v 2 (quote little) 7) ;=> -28542803325987074
+(bytevector-sint-ref (make-bytevector 1000 -1) 0 (quote big) 1000) ;=> -1
+
+
+;;; set!: uint, sint
+v ;=> #vu8(0 18 52 86 0)
+
+v ;=> #vu8(255 0 0 0 0 128 255)
+
+
+;;; conversion: uint-list, sint-list
+(bytevector->uint-list (make-bytevector 0) (quote little) 3) ;=> ()
+(let ((v #vu8(1 2 3 4 5 6))) (bytevector->uint-list v (quote big) 3)) ;=> (66051 263430)
+(let ((v (make-bytevector 80 -1))) (bytevector->sint-list v (quote big) 20)) ;=> (-1 -1 -1 -1)
+(uint-list->bytevector (quote ()) (quote big) 25) ;=> #vu8()
+(sint-list->bytevector (quote (0 -1)) (quote big) 3) ;=> #vu8(0 0 0 255 255 255)
+
+(f 6) ;=> #vu8(0 0 0 0 0 128 255 255 255 255 255 127)
+
+
+;;; set!: ieee
+(list (bytevector-ieee-single-native-ref v 0) (bytevector-ieee-single-native-ref v 4)) ;=> (0.125 -1.5)
+
+(bytevector-ieee-double-native-ref v 0) ;=> 1e23
+
+
+;;; set! with eness: ieee
+(list (bytevector-ieee-single-ref v 1 (quote little)) (bytevector-ieee-single-ref v 6 (quote big))) ;=> (0.125 -1.5)
+v ;=> #vu8(199 0 0 0 62 199 191 192 0 0)
+
+(bytevector-ieee-double-ref v 1 (quote big)) ;=> 1e23
+
+# ex11-symbols.ss
+
+;;; symbol=?
+(symbol=? (quote a) (quote a)) ;=> #t
+(symbol=? (quote a) (string->symbol "a")) ;=> #t
+(symbol=? (quote a) (quote b)) ;=> #f
+
+
+;;; string->symbol
+(string->symbol "x") ;=> x
+(eq? (string->symbol "x") (quote x)) ;=> #t
+(eq? (string->symbol "X") (quote x)) ;=> #f
+(eq? (string->symbol "x") (string->symbol "x")) ;=> #t
+(string->symbol "()") ;=> \x28;\x29;
+
+
+;;; symbol->string
+(symbol->string (quote xyz)) ;=> "xyz"
+(symbol->string (quote Hi)) ;=> "Hi"
+(symbol->string (string->symbol "()")) ;=> "()"
+
+# ex12-booleans.ss
+
+;;; boolean=?
+(boolean=? #t #t) ;=> #t
+(boolean=? #t #f) ;=> #f
+(boolean=? #t (< 3 4)) ;=> #t
+
+# ex13-hashtables.ss
+
+;;; make-eq-hashtable  
+ht1 ;=> #<eq hashtable>
+ht2 ;=> #<eq hashtable>
+
+
+;;; hashtable-mutable?
+(hashtable-mutable? (make-eq-hashtable)) ;=> #t
+(hashtable-mutable? (hashtable-copy (make-eq-hashtable))) ;=> #f
+
+
+;;; hashtable-hash-function, hashtable-equivalence-function
+(hashtable-hash-function ht) ;=> #f
+(eq? (hashtable-equivalence-function ht) eq?) ;=> #t
+
+(eq? (hashtable-hash-function ht) string-hash) ;=> #t
+(eq? (hashtable-equivalence-function ht) string=?) ;=> #t
+
+
+;;; hashtable-set!
+ht ;=> #<eq hashtable>
+
+
+;;; hashtable-ref
+(hashtable-ref eqht p1 55) ;=> 73
+(hashtable-ref eqht p2 55) ;=> 55
+
+(hashtable-ref equalht p1 55) ;=> 73
+(hashtable-ref equalht p2 55) ;=> 73
+
+
+;;; hashtable-contains?
+(hashtable-contains? ht p1) ;=> #t
+
+
+;;; hashtable-update!
+(hashtable-ref ht (quote a) 0) ;=> 110
+
+(hashtable-ref ht (quote a) 0) ;=> 220
+
+
+;;; hashtable-delete!
+(hashtable-contains? ht p1) ;=> #t
+
+(hashtable-contains? ht p1) ;=> #f
+
+(hashtable-contains? ht p2) ;=> #f
+
+
+;;; hashtable-size
+(hashtable-size ht) ;=> 0
+
+(hashtable-size ht) ;=> 1
+
+(hashtable-size ht) ;=> 0
+
+
+;;; hashtable-copy
+(hashtable-mutable? ht-copy) ;=> #f
+
+(hashtable-ref ht p1 #f) ;=> #f
+
+(hashtable-ref ht-copy p1 #f) ;=> "c"
+
+
+;;; hashtable-clear!
+(hashtable-size ht) ;=> 2
+
+(hashtable-size ht) ;=> 0
+
+(hashtable-ref ht p1 #f) ;=> #f
+
+
+;;; hashtable-keys
+(hashtable-keys ht) ;=> #(q (a . b) (a . b))
+
+# ex14-enumerations.ss
+
+;;; define-enumeration
+(weather-element hot) ;=> hot
+(weather hot sunny windy) ;=> #<enum-set>
+(enum-set->list (weather rainy cold rainy)) ;=> (cold rainy)
+
+
+;;; make-enumeration
+(enum-set->list positions) ;=> (top bottom above beside)
+
+
+;;; enum-set-constructor
+(enum-set->list e2) ;=> (one three)
+
+(enum-set->list e3) ;=> (one two four)
+
+
+;;; enum-set-universe
+(enum-set->list (enum-set-universe e1)) ;=> (a b c d)
+
+(enum-set->list (enum-set-universe e2)) ;=> (a b c d)
+
+
+;;; enum-set->list
+(enum-set->list e1) ;=> (a b c d)
+
+(enum-set->list e2) ;=> (a b c d)
+
+
+;;; enum-set-subset?
+(enum-set-subset? e1 e2) ;=> #t
+(enum-set-subset? e2 e1) ;=> #f
+
+(enum-set-subset? e3 e1) ;=> #f
+(enum-set-subset? e3 e2) ;=> #t
+
+
+;;; enum-set=?
+(enum-set=? e1 e2) ;=> #t
+
+(enum-set=? e3 e4) ;=> #t
+(enum-set=? e3 e2) ;=> #f
+
+
+;;; enum-set-member?
+(enum-set-member? (quote c) e1) ;=> #t
+(enum-set-member? (quote c) e2) ;=> #f
+
+
+;;; union, intersection, difference
+(enum-set->list (enum-set-union e2 e3)) ;=> (a b c)
+(enum-set->list (enum-set-intersection e2 e3)) ;=> (c)
+(enum-set->list (enum-set-difference e2 e3)) ;=> (a)
+(enum-set->list (enum-set-difference e3 e2)) ;=> (b)
+
+e4 ;=> #<enum-set>
+
+
+;;; complement
+(enum-set->list (enum-set-complement e1)) ;=> ()
+
+(enum-set->list (enum-set-complement e2)) ;=> (b d)
+
+
+;;; enum-set-indexer
+(p (quote a)) ;=> 0
+(p (quote c)) ;=> 2
+(p (quote e)) ;=> #f

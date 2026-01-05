@@ -1,0 +1,30 @@
+# square.ss
+
+run test #<procedure square at square.ss:44>
+ arg: -2, result: 4.
+ arg: -1, result: 1.
+ arg: 0, result: 0.
+ arg: 1, result: 1.
+ arg: 2, result: 4.
+done!
+
+# ex-lambda.ss
+
+(f 1 2 3 4) ;=> (1 2 3 4)
+(f) ;=> ()
+(g 1 2 3 4) ;=> (1 (2 3 4))
+(h (quote a) (quote b) (quote c) (quote d)) ;=> (a b (c d))
+
+# ex-trace.ss
+
+|(length (a b c d))
+| (length (b c d))
+| |(length (c d))
+| | (length (d))
+| | |(length ())
+| | |0
+| | 1
+| |2
+| 3
+|4
+4

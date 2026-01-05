@@ -1,0 +1,5 @@
+{:linters
+ {:clojure-lsp/unused-public-var
+  {:level :warning
+   :exclude #{basics.c01-hello-clojure/first-name
+              basics.c01-hello-clojure/the-average}}}}

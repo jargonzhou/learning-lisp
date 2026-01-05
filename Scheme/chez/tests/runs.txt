@@ -1,0 +1,218 @@
+# test-simple.ss
+
+;;; println
+
+(1 2 3)
+(a b c)
+
+;;; pr
+(quote (1 2 3)) ;=> (1 2 3)
+
+;;; prs
+
+(+ 1 2 3) ;=> 6
+(cons (quote a) (quote b)) ;=> (a . b)
+
+# test-setops.ss
+
+(list set1 set2) ;=> ((a b c d) (a c e))
+(eq? (get-set1) (get-set1)) ;=> #t
+(eq? (get-set1) (set (quote a) (quote b) (quote c) (quote d))) ;=> #f
+(union set1 set2) ;=> (b d a c e)
+(intersection set1 set2) ;=> (a c)
+(difference set1 set2) ;=> (b d)
+(set-cons (quote a) set2) ;=> (a c e)
+(set-cons (quote b) set2) ;=> (b a c e)
+(set-remove (quote a) set2) ;=> (c e)
+
+# test-base.ss
+
+run test #<procedure tree-copy at base.ss:92>
+ arg: (((a . b) . c)), result: ((a . b) . c).
+done!
+
+# tools
+
+## test-stack.ss
+
+run test #<procedure at stack.ss:175>
+ arg: (empty?), result: #t.
+done!
+
+run test #<procedure at stack.ss:175>
+ arg: (empty?), result: #t.
+done!
+
+run test #<procedure at stack.ss:175>
+ arg: (push! b), result: #<void>.
+done!
+
+run test #<procedure at stack.ss:175>
+ arg: (push! c), result: #<void>.
+done!
+
+run test #<procedure at stack.ss:175>
+ arg: (top), result: b.
+done!
+
+run test #<procedure at stack.ss:175>
+ arg: (top), result: c.
+done!
+
+run test #<procedure at stack.ss:175>
+ arg: (pop!), result: b.
+done!
+
+run test #<procedure at stack.ss:175>
+ arg: (empty?), result: #t.
+done!
+
+## test-queue.ss
+
+run test #<procedure getq at queue.ss:407>
+ arg: (((a b ignored) ignored)), result: a.
+done!
+
+run test #<procedure getq at queue.ss:407>
+ arg: (((b ignored) ignored)), result: b.
+done!
+
+## test-lazy.ss
+
+(p) ;=> Ouch!
+"got me"
+(p) ;=> "got me"
+
+# grades.ss
+
+2.8
+b
+
+# tspl
+
+## test-matrix.ss
+
+(mul 3 4) ;=> 12
+(mul 1/2 (quote #(#(1 2 3)))) ;=> #(#(1/2 1 3/2))
+(mul -2 (quote #(#(3 -2 1) #(-3 0 -5) #(7 -1 -1)))) ;=> #(#(-6 4 -2) #(6 0 10) #(-14 2 2))
+(mul (quote #(#(1 2 3))) (quote #(#(2 3) #(3 4) #(4 5)))) ;=> #(#(20 26))
+(mul (quote #(#(2 3 4) #(3 4 5))) (quote #(#(1) #(2) #(3)))) ;=> #(#(20) #(26))
+(mul (quote #(#(1 2 3) #(4 5 6))) (quote #(#(1 2 3 4) #(2 3 4 5) #(3 4 5 6)))) ;=> #(#(14 20 26 32) #(32 47 62 77))
+
+
+## test-sort.ss
+
+(sort < (quote (3 4 2 1 2 5))) ;=> (1 2 2 3 4 5)
+(sort > (quote (0.5 1/2))) ;=> (0.5 1/2)
+(sort > (quote (1/2 0.5))) ;=> (1/2 0.5)
+(list->string (sort char>? (string->list "coins"))) ;=> "sonic"
+
+(merge char<? (quote (#\a #\c)) (quote (#\b #\c #\d))) ;=> (#\a #\b #\c #\c #\d)
+(merge < (quote (1/2 2/3 3/4)) (quote (0.5 0.6 0.7))) ;=> (1/2 0.5 0.6 2/3 0.7 3/4)
+(list->string (merge char>? (string->list "old") (string->list "toe"))) ;=> "tooled"
+
+## test-sets.ss
+
+(set-of x (x in (quote (a b c)))) ;=> (a b c)
+(set-of x (x in (quote (1 2 3 4))) (even? x)) ;=> (2 4)
+(set-of (cons x y) (x in (quote (1 2 3))) (y is (* x x))) ;=> ((1 . 1) (2 . 4) (3 . 9))
+(set-of (cons x y) (x in (quote (a b))) (y in (quote (1 2)))) ;=> ((a . 1) (a . 2) (b . 1) (b . 2))
+
+## test-printer.ss
+
+> a : symbol
+> (1 : number 2 : number) : pair
+> (1 : number . 2 : number) : pair
+> 1 : number
+> 1.0 : number
+> #\a : char
+> "a" : string
+> #(1 : number 2 : number) : vector
+> #vu8(1 : number 2 : number) : bytevector
+> #<port>
+> #<procedure>
+
+## test-formatted-output.ss
+
+The string "~" display as ~.
+1 word
+
+## test-interpreter.ss
+
+(interpret 3) ;=> 3
+(interpret (quote (cons 3 4))) ;=> (3 . 4)
+(interpret (quote ((lambda (x . y) (list x y)) (quote a) (quote b) (quote c) (quote d)))) ;=> (a (b c d))
+(interpret (quote (((call/cc (lambda (k) k)) (lambda (x) x)) "HEY!"))) ;=> "HEY!"
+(interpret (quote ((lambda (memq) (memq memq (quote a) (quote (b c a d e)))) (lambda (memq x ls) (if (null? ls) #f (if (eq? (car ls) x) ls (memq memq x (cdr ls)))))))) ;=> (a d e)
+(interpret (quote ((lambda (reverse) (set! reverse (lambda (ls new) (if (null? ls) new (reverse (cdr ls) (cons (car ls) new))))) (reverse (quote (a b c d e)) (quote ()))) #f))) ;=> (e d c b a)
+
+## test-oop.ss
+
+(send-message p get-car) ;=> a
+(send-message p get-cdr) ;=> b
+(send-message p set-cdr! (quote c)) ;=> #<void>
+(send-message p get-cdr) ;=> c
+
+(send-message p get-car) ;=> a
+(send-message p get-cdr) ;=> b
+(send-message p accesses) ;=> 2
+(send-message p get-cdr) ;=> b
+(send-message p accesses) ;=> 3
+
+## test-unification.ss
+
+(unify (quote x) (quote y)) ;=> y
+(unify (quote (f x y)) (quote (g x y))) ;=> "clash"
+(unify (quote (f x (h))) (quote (f (h) y))) ;=> (f (h) (h))
+(unify (quote (f (g x) y)) (quote (f y x))) ;=> "cycle"
+(unify (quote (f (g x) y)) (quote (f y (g x)))) ;=> (f (g x) (g x))
+(unify (quote (f (g x) y)) (quote (f y z))) ;=> (f (g x) (g x))
+
+## test-engines.ss
+
+;;; make-engine
+(eng 10 (lambda (ticks value) value) (lambda (x) x)) ;=> 3
+(eng 10 list (lambda (x) x)) ;=> (9 3)
+
+(eng 50 list (lambda (new-eng) (set! eng new-eng) "expired")) ;=> "expired"
+(eng 50 list (lambda (new-eng) (set! eng new-eng) "expired")) ;=> "expired"
+(eng 50 list (lambda (new-eng) (set! eng new-eng) "expired")) ;=> "expired"
+(eng 50 list (lambda (new-eng) (set! eng new-eng) "expired")) ;=> (22 55)
+
+(mileage (lambda () (fibonacci 10))) ;=> 178
+
+;;; round robin
+(round-robin (map (lambda (x) (make-engine (lambda () (fibonacci x)))) (quote (4 5 2 8 3 7 6 2)))) ;=> (1 1 2 3 5 8 13 21)
+
+
+;;; parallel or
+(por 1 2) ;=> 1
+(por ((lambda (x) (x x)) (lambda (x) (x x))) (fibonacci 10)) ;=> 55
+
+# sicp
+
+## metalinguistic/test-mc-eval.ss
+
+> M-Eval input:
+(cons 1 2)
+
+> M-Eval value:
+(1 . 2)
+
+> M-Eval input:
+(define (append x y)
+  (if (null? x)
+    y
+    (cons (car x) (append (cdr x) y))))
+
+> M-Eval value:
+ok
+
+> M-Eval input:
+(append '(a b c) '(d e f))
+
+> M-Eval value:
+(a b c d e f)
+
+> M-Eval input:
+(exit)

@@ -1,0 +1,108 @@
+# define-records.ss
+
+;;; defaults
+p ;=> #[#{point d42dsk1ncm6hljodh4jb4yzz-1} 36 -17]
+(point? p) ;=> #t
+(point? (quote (cons 36 -17))) ;=> #f
+(point-x p) ;=> 36
+(point-y p) ;=> -17
+
+;;; override names
+(ispoint? p) ;=> #t
+(ispoint? p2) ;=> #t
+(equal? p p2) ;=> #f
+(ispoint? (quote (cons 36 -17))) ;=> #f
+(x-val p) ;=> 36
+(y-val p) ;=> -17
+(x-val p) ;=> 24
+
+;;; subtype
+(point? cp) ;=> #t
+(cpoint? cp) ;=> #t
+(cpoint? (make-point 3 4)) ;=> #f
+(point-x cp) ;=> 3
+(point-y cp) ;=> 4
+(cpoint-color cp) ;=> red
+
+;;; protocol
+(point-x p) ;=> 3
+(point-y p) ;=> 4
+(point-d p) ;=> 5
+(point-x cp) ;=> 3
+(point-y cp) ;=> 4
+(cpoint-color cp) ;=> red
+
+# procedural-interface.ss
+
+;;; make-record-type-descriptor, make-record-constructor-descriptor
+p ;=> #[#{point os20bvrqxejjkxy0k2rnzcfjt-1} 3 4]
+(point? p) ;=> #t
+(point-x p) ;=> 3
+(point-x-set! p 33) ;=> #<void>
+(point-x p) ;=> 33
+
+
+;;; parent and child
+(rtd? rtd/parent) ;=> #t
+(rtd? rcd/parent) ;=> #f
+
+(parent? p) ;=> #t
+(parent-x p) ;=> 100
+(set-parent-x! p 150) ;=> #<void>
+(parent-x p) ;=> 150
+
+(parent? c) ;=> #t
+(child? c) ;=> #t
+(child? p) ;=> #f
+(parent-x c) ;=> 100
+(child-x c) ;=> 15
+(child-y c) ;=> cc
+
+
+# inspection.ss
+
+;;; record-type-name
+(record->name (make-dim 10 15 6)) ;=> dim
+(record->name (make-dim2 10 15 6)) ;=> #f
+
+
+;;; record-type-parent
+(record-type-parent (rtd point)) ;=> #f
+(record-type-parent (rtd cpoint)) ;=> #<record type point>
+
+
+;;; record-type-uid
+(record-type-uid (rtd point)) ;=> #{point khb0tj5qbttr5tagz04fzlpdg-1}
+(record-type-uid (rtd cpoint)) ;=> e40cc926-8cf4-4559-a47c-cac636630314
+
+
+;;; record-type-generative? record-type-sealed? record-type-opaque?
+(record-type-generative? rtd1) ;=> #t
+(record-type-sealed? rtd1) ;=> #f
+(record-type-opaque? rtd1) ;=> #t
+(record-type-generative? rtd2) ;=> #f
+(record-type-sealed? rtd2) ;=> #f
+(record-type-opaque? rtd2) ;=> #t
+
+
+;;; record-type-field-names
+(record-type-field-names (rtd point)) ;=> #(x y)
+(record-type-field-names (rtd cpoint)) ;=> #(color)
+
+
+;;; record-field-mutable?
+(record-field-mutable? (rtd point) 0) ;=> #t
+(record-field-mutable? (rtd cpoint) 0) ;=> #f
+
+
+;;; record?
+(statement? q) ;=> #t
+(record? q) ;=> #t
+(opaque-statement? q2) ;=> #t
+(record? q2) ;=> #f
+
+
+;;; record-rtd
+x=-3
+y=7
+color=blue

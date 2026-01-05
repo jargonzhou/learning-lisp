@@ -1,0 +1,28 @@
+# continuations.ss
+
+;;; return values of call/cc
+(call/cc (lambda (k) (* 5 4))) ;=> 20
+(call/cc (lambda (k) (* 5 (k 4)))) ;=> 4
+(+ 2 (call/cc (lambda (k) (* 5 (k 4))))) ;=> 6
+
+;;; nonlocal exit
+(product (quote (1 2 3 4 5))) ;=> 120
+(product (quote (1 2 3 0 5))) ;=> 0
+
+;;; continuation as return value
+hi
+k ;=> #<continuation>
+x ;=> #<continuation>
+(x (lambda (ignore) "hi")) ;=> x ;=> #<procedure at continuations.ss:776>
+(x (lambda (ignore) "hi")) ;=> "hi"
+
+;;; outlize the continuation
+(factorial 4) ;=> 24
+(retry 1) ;=> 24
+(retry 2) ;=> 48
+(retry 5) ;=> 120
+
+### cps.ss
+
+(cons (quote d) (h (quote ()))) ;=> (d b a c)
+(h (quote ()) (lambda (v) (cons (quote d) v))) ;=> (d b a c)

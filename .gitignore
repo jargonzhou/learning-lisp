@@ -1,14 +1,37 @@
-pom.xml
-pom.xml.asc
-*.jar
-*.class
-/lib/
-/classes/
-/target/
-/checkouts/
-.lein-deps-sum
-.lein-repl-history
-.lein-plugins/
-.lein-failures
-.nrepl-port
-.cpcache/
+# VSCode
+.vscode
+
+# Common Lisp
+tempCodeRunnerFile.lisp
+**/common-lisp-jupyter/
+
+# Scheme
+*.ss~
+*.ss#*
+.#*.ss
+tempCodeRunnerFile.ss
+wfreq.out
+outfile
+myfile.ss
+foo.ss
+bar.ss
+
+*.scm~
+*.scm#*
+.#*.scm
+
+# Clojure
+.hgignore
+.calva
+.cpcache
+.clj-kondo/.cache/
+.lsp/.cache/
+# !.lsp/config.edn
+Clojure/**/.calva
+Clojure/**/.cpcache
+Clojure/**/.nrepl-port
+Clojure/**/.lsp/**
+!Clojure/**/.lsp/config.edn
+Clojure/**/.clj-kondo/**
+!Clojure/**/.clj-kondo/config.edn
+target/
