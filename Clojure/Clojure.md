@@ -11,11 +11,26 @@
 
 Features: https://clojure.org/about/features
 * Dynamic Development/动态开发
-* Functional Programming
-* Lisp
+  * The REPL
+  * Basics
+  * Dynamic Compilation
+* Functional Programming/函数式编程
+  * First-class functions: `fn`, `defn`
+  * Immutable Data Structures: Persistence/持久性 is a term used to describe the property wherein the old version of the collection is still available after the 'change', and that the collection maintains its performance guarantees for most operations.
+  * Extensible Abstractions: Clojure uses Java interfaces to define its core data structures. - seq, `lazy-seq`
+  * Recursive Looping: `recur`
+* Lisp: Clojure extends the code-as-data system beyond parenthesized lists (s-expressions) to vectors and maps.
 * Runtime Polymorphism/运行时多态
-* Concurrent Programming
+  * Most core infrastructure data structures in the Clojure runtime are defined by Java interfaces.
+  * Clojure supports the generation of implementations of Java interfaces in Clojure using proxy/代理.
+  * The Clojure language supports polymorphism along both class and custom hierarchies with multimethods/多方法. - `defmulti`, `defmethod`
+  * The Clojure language also supports a faster form of polymorphism with protocols/协议 (but limited only to class polymorphism to take advantage of the JVMs existing capabilities for invocation). - `defprotocol`
+* Concurrent Programming/并发编程
+  * STM: software transactional memory system
+  * ref, agent, atom, var
 * Hosted on the JVM
+  * Clojure is designed to be a hosted language, sharing the JVM type system, GC, threads etc.
+  * Clojure supports the dynamic implementation of Java interfaces and classes using `reify` and `proxy`
 
 Actions
 - [Programming Clojure](./codes/programming-clojure/ProgrammingClojure.md)
@@ -87,8 +102,8 @@ Libraries
 * [clojure.reference.md](./language/clojure.reference.md)
 
 Contents
-* [The Reader/读取器](./language/reference/Reader.md)
-* [The REPL and main]()
+* The Reader/读取器
+* The REPL and main
 * Evaluation/求值
 * Special Forms/特殊形式
 * Macros/宏
@@ -122,8 +137,8 @@ Contents
   * `clojure.xml`: XML
   * `clojure.zip`: Zipper - FUnctional Tree Editing
 * Differences with Lisps
-* [Clojure CLI](./language/reference/Clojure%20CLI.md): The Clojure CLI is a command-line tool to run Clojure programs on the Java Virtual Machine. The Clojure CLI uses deps.edn files to configure and download program dependencies to include on the JVM classpath.
-* [deps.edn](./language/reference/deps.edn.md): The `deps.edn` file is a data file specifying all information needed to form a project classpath, including deps, paths, and external dependency repository information. The `deps.edn` file format is used by the [tools.deps library](https://github.com/clojure/tools.deps) and the Clojure CLI.
+* Clojure CLI: The Clojure CLI is a command-line tool to run Clojure programs on the Java Virtual Machine. The Clojure CLI uses deps.edn files to configure and download program dependencies to include on the JVM classpath.
+* deps.edn: The `deps.edn` file is a data file specifying all information needed to form a project classpath, including deps, paths, and external dependency repository information. The `deps.edn` file format is used by the [tools.deps library](https://github.com/clojure/tools.deps) and the Clojure CLI.
 
 
 # API
@@ -170,7 +185,11 @@ Contents
 >
 > ClojureCLR is programmed in C# (and Clojure itself).
 
+# Implementation
+* [clojure.rtfsc.md](./language/clojure.rtfsc.md)
+
 # See Also
+* [clojure-koans](https://github.com/functional-koans/clojure-koans): A set of exercises for learning Clojure.
 * [edn-format/edn](https://github.com/edn-format/edn): Extensible Data Notation.
 * [mal - Make a Lisp](https://github.com/kanaka/mal): Mal is a Clojure inspired Lisp interpreter.
 * [transit-format](https://github.com/cognitect/transit-format): Transit is a format and set of libraries for conveying values between applications written in different programming languages. This spec describes Transit in order to facilitate its implementation in a wide range of languages.

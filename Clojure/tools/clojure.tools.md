@@ -25,13 +25,21 @@ Clojure CLI version (deps.clj) 1.12.3.1577
 ```
 
 # Project
+* [Babashka](./Babashka/Babashka.md): Native, fast starting Clojure interpreter for scripting.
 * [boot](https://github.com/boot-clj/boot): Boot is a Clojure build framework and ad-hoc Clojure script evaluator.
 * [clj-kondo](https://github.com/clj-kondo/clj-kondo): A static analyzer and linter for Clojure code that sparks joy. - `.clj-kondo/config.edn`
 * [clj-new](https://github.com/seancorfield/clj-new): Generate new projects from Leiningen or Boot templates, or `clj-template` projects, using just the `clojure` command-line installation of Clojure!
 * [Clojars](https://clojars.org/): Clojars is an easy to use community repository for open source Clojure libraries.
 * [clojure-lsp](https://github.com/clojure-lsp/clojure-lsp): Clojure & ClojureScript Language Server (LSP) implementation. - `.lsp/config.edn`
+* [clojure-maven-plugin](https://github.com/talios/clojure-maven-plugin): Apache Maven Mojo for compiling clojure scripts to class files.
 * [deps-new](https://github.com/seancorfield/deps-new): Create new projects for the Clojure CLI / `deps.edn`.
+* [docker-clojure](https://github.com/Quantisan/docker-clojure): Official Docker image for Clojure.
+* [flow-storm-debugger](https://github.com/flow-storm/flow-storm-debugger): A debugger for Clojure and ClojureScript with some unique features.
+* [Heroku](https://en.wikipedia.org/wiki/Heroku): Heroku is a cloud platform as a service (PaaS) supporting several programming languages.
 * [Leiningen](./Leiningen/Leiningen.md): Leiningen is for automating Clojure projects without setting your hair on fire.
+* [Pallet](https://github.com/pallet/pallet): Automates controlling and provisioning cloud server instances. DevOps for the JVM. - outdated
+* [Riemann](https://github.com/riemann/riemann): A network event stream processing system, in Clojure.
+* [SCI: Small Clojure Interpreter](https://github.com/babashka/sci): Configurable Clojure/Script interpreter suitable for scripting and Clojure DSLs.
 * [The Clojure Style Guide](https://guide.clojure.style/): This Clojure style guide recommends best practices so that real-world Clojure programmers can write code that can be maintained by other real-world Clojure programmers. A style guide that reflects real-world usage gets used, and a style guide that holds to an ideal that has been rejected by the people it is supposed to help risks not getting used at all — no matter how good it is.
 
 # Documentation
@@ -46,29 +54,54 @@ Clojure CLI version (deps.clj) 1.12.3.1577
   * example: [Getting Started with Clojure Unit Testing: A Simple Tutorial](https://tonitalksdev.com/how-to-get-started-with-tdd-in-clojure) - 2023-10-30
 
 # Libraries
+
+Library search
+* [Clojure Toolbox](https://www.clojure-toolbox.com/): categorized Clojure libs
+* [Clojars](https://clojars.org/): community repo for Clojure libs
+* [Maven Central](https://search.maven.org/): searchable repo of Java and Clojure libs
+* [GitHub](https://github.com/search?language=Clojure): search by language
+
+Library collections:
+* [Clojure contrib libs](https://clojure.org/dev/contrib_libs): open source libs under the Clojure umbrella project
+* [clj-commons](https://clj-commons.org/): CLJ Commons is a community-led project to build up the supporting infrastructure around Clojure to make it a better experience for people new to Clojure, as well as existing Clojurists.
+* [ClojureWerkz](https://github.com/clojurewerkz)
+
+Libraries:
 * [Cheshire](https://github.com/dakrone/cheshire): Cheshire is fast JSON encoding, based off of clj-json and clojure-json, with additional features like Date/UUID/Set/Symbol encoding and SMILE support.
 * [Clojure.Java-Time](https://github.com/dm3/clojure.java-time): A Clojure wrapper for Java 8 Date-Time API.
 * [Clostache](https://github.com/fhd/clostache): `{{ mustache }}` for Clojure.
-* [Compojure](https://github.com/weavejester/compojure): Compojure is a small routing library for Ring that allows web applications to be composed of small, independent parts.
 * [Component](https://github.com/stuartsierra/component): 'Component' is a tiny Clojure framework for managing the lifecycle and dependencies of software components which have runtime state. This is primarily a design pattern with a few helper functions. It can be seen as a style of dependency injection using immutable data structures.
 * [core.async](https://github.com/clojure/core.async): A Clojure library providing facilities for async programming and communication.
 * [core.logic](https://github.com/clojure/core.logic/): A logic programming library for Clojure & ClojureScript.
 * [core.typed](https://github.com/clojure/core.typed): An optional type system for Clojure. deprecated as of Clojure 1.11.
+* [data.json](https://github.com/clojure/data.json): JSON in Clojure.
 * [google/clojure-turtle](https://github.com/google/clojure-turtle): A Clojure library that implements the Logo programming language in a Clojure context.
+* [markdown-clj](https://github.com/yogthos/markdown-clj): Markdown parser written in Clojure/Script.
+* [Overtone](https://github.com/overtone/overtone): Overtone is an Open Source toolkit for designing synthesizers and collaborating with music.
+* [rewrite-clj](https://github.com/clj-commons/rewrite-clj): A library that reads and writes Clojure, ClojureScript and EDN from Clojure and ClojureScript in a whitespace and comment preserving way.
+* [struct](https://github.com/funcool/struct): Structural validation library for Clojure(Script).
+
+## Database Libraries
+* [Avout](https://github.com/liebke/avout): Distributed State in Clojure.
+* [clojure.java.jdbc](https://github.com/clojure/java.jdbc): A low-level Clojure wrapper for JDBC-based access to databases. This project is "Inactive". It has effectively been superseded by seancorfield/next.jdbc.
+* [Clutch](https://github.com/clojure-clutch/clutch): A Clojure library for Apache CouchDB.
+* [HugSQL](https://www.hugsql.org/): HugSQL is a Clojure library for embracing SQL.
+* [Korma](https://github.com/korma/Korma): Tasty SQL for Clojure.
+* [Migratus](https://github.com/yogthos/migratus): A general migration framework, with implementations for migrations as SQL scripts or general Clojure code.
+* [next.jdbc](https://github.com/seancorfield/next-jdbc): The next generation of `clojure.java.jdbc`: a new low-level Clojure wrapper for JDBC-based access to databases.
+
+## Web Libraries
+* [Compojure](https://github.com/weavejester/compojure): Compojure is a small routing library for Ring that allows web applications to be composed of small, independent parts.
+* [Enlive](https://github.com/cgrand/enlive): Enlive is a selector-based (à la CSS) templating library for Clojure.
 * [Hiccup](./ClojureScript/Hiccup.md): Fast library for rendering HTML in Clojure
 * [http-kit](https://github.com/http-kit/http-kit): Simple, high-performance event-driven HTTP client+server for Clojure.
-* [HugSQL](https://www.hugsql.org/): HugSQL is a Clojure library for embracing SQL.
 * [Kit](https://kit-clj.github.io/): Kit is a lightweight, modular framework for scalable web development in Clojure. - a successor to Luminus 
-  * https://github.com/kit-clj/kit
-* [Korma](https://github.com/korma/Korma): Tasty SQL for Clojure.
 * [Luminus](./Luminus.md): Luminus is a Clojure micro-framework based on a set of lightweight libraries. It aims to provide a robust, scalable, and easy to use platform.
-* [markdown-clj](https://github.com/yogthos/markdown-clj): Markdown parser written in Clojure/Script.
-* [Migratus](https://github.com/yogthos/migratus): A general migration framework, with implementations for migrations as SQL scripts or general Clojure code.
+* [Moustache](https://github.com/cgrand/moustache): a micro web framework/internal DSL to wire Ring handlers and middlewares.
 * [Pedestal](https://github.com/pedestal/pedestal): Pedestal is a set of libraries written in Clojure that aims to bring both the language and its principles (Simplicity, Power, and Focus) to server-side development.
 * [Ring](./Ring.md): Ring is a Clojure web applications library inspired by Python's WSGI and Ruby's Rack. By abstracting the details of HTTP into a simple, unified API, Ring allows web applications to be constructed of modular components that can be shared among a variety of applications, web servers, and web frameworks.
 * [Selmer](https://github.com/yogthos/Selmer): A fast, Django inspired template system in Clojure.
 * [Sente](https://github.com/taoensso/sente): Realtime web comms library for Clojure/Script.
-* [struct](https://github.com/funcool/struct): Structural validation library for Clojure(Script).
 
 # ClojureScript
 * [C2](https://github.com/lynaghk/c2): Declarative data visualization in Clojure(Script).
@@ -87,6 +120,7 @@ Clojure CLI version (deps.clj) 1.12.3.1577
 * [shadow-cljs](./ClojureScript/shadow-cljs.md): provides everything you need to compile your ClojureScript code with a focus on simplicity and ease of use.
 
 # See Also
+* [braveclojure/open-source-projects](https://github.com/braveclojure/open-source-projects): A directory of open source Clojure projects actively welcoming new contributors
 * [metosin/open-source](https://github.com/metosin/open-source): Home page for Metosin's open source development work.
   * compojure-api: Sweet web apis with Compojure & Swagger
   * jsonista: Clojure library for fast JSON encoding and decoding.
@@ -100,4 +134,5 @@ Clojure CLI version (deps.clj) 1.12.3.1577
   * schema-tools: Clojure(Script) tools for Plumatic Schema
   * spec-tools: Clojure(Script) tools for clojure.spec
   * ...
+* [Top 100 Stars in Clojure](https://github.com/EvanLi/Github-Ranking/blob/master/Top100/Clojure.md)
 * [Useful Libraries - Luminus](Luminus.md#useful-libraries)

@@ -1,0 +1,24 @@
+=== 1. VSCode settings.json
+
+// 自定义格式化器
+"customLocalFormatters.formatters": [
+  {
+    "languages": [
+      "commonlisp"
+    ],
+    "command": "\"C:\\Program Files\\Git\\bin\\bash.exe\" -c \"lisp-format ${file}\""
+  }
+],
+  "[commonlisp]": {
+  "editor.defaultFormatter": "jkillian.custom-local-formatters"
+}
+
+=== 2. ~\.vscode\extensions\jkillian.custom - local - formatters - 0.2.0\out\extension.js
+
+const formatDocument = (document, options, range, commandTemplate, outputChannel) => {
+  outputChannel.appendLine(`${JSON.stringify(document)} ${JSON.stringify(options)} ${range} ${commandTemplate}}`);
+
+  const command = commandTemplate
+    .replace(/\${file}/g, document.fileName.replace("d:", "/d").replaceAll("\\", "/"))
+    .replace(/\${insertSpaces}/g, "" + options.insertSpaces)
+    .replace(/\${tabSize}/g, "" + options.tabSize);

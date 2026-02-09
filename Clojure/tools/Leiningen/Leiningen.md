@@ -356,6 +356,10 @@ In order to prevent profile settings from being propagated to other projects tha
 * https://leiningen.org/plugins.html
 * https://wiki.leiningen.org/Plugins
 
+
+plugins:
+* [lein-jib-build](https://github.com/vehvis/lein-jib-build): Build docker containers with Leiningen, no docker installation needed. Uses Google's Jib toolkit.
+
 # Deploy
 * https://leiningen.org/deploy.html
 

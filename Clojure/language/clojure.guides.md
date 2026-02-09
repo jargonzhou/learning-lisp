@@ -26,16 +26,16 @@
 (require '[clojure.spec.gen.alpha :as gen])
 ```
 
-# Reading Clojure Characters/Clojure字符
+# Reading Clojure Characters/阅读Clojure字符
 
-- `( …​ )`: List/列表
-- `[ …​ ]`: Vector/向量
-- `{ …​ }`: Map/映射
+- `( ...​ )`: List/列表
+- `[ ...​ ]`: Vector/向量
+- `{ ...​ }`: Map/映射
 - `#`: Dispatch character/分发字符
-- `#{ …​ }`: Set/集
-- `#_`: Discard/忽略
-- `#"…​"`: Regular Expression/正则表达式
-- `#(…​)`: Anonymous function/匿名函数
+- `#{ ...​ }`: Set/集
+- `#_`: Discard/忽略 - reader macro
+- `#"...​"`: Regular Expression/正则表达式
+- `#(...​)`: Anonymous function/匿名函数
 - `#'`: Var quote/var引用
 - `##`: Symbolic values/符号值
 - `#inst`, `#uuid`, and `#js` etc.: tagged literals/标记的字面量

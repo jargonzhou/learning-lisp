@@ -1,5 +1,9 @@
 # Clojure Programming
 
+version in books: 1.4.0.
+
+skimming: 2026-01-23
+
 # Setup
 
 ```shell
@@ -12,31 +16,33 @@ $ lein new app clojure-programming
 - The Clojure REPL
 - No, Parentheses Actually Won’t Make You Go Blind
 - Expressions, Operators, Syntax, and Precedence
-- Homoiconicity
-- The Reader
-  - Scalar Literals
+- Homoiconicity/同像性
+- The Reader: `read`, `read-string`, `pr`, `pr-str`
+  - Scalar Literals/标量字面量
     - Strings
     - Booleans
-    - nil
+    - `nil`
     - Characters
-    - Keywords
+    - Keywords: `::`, `name`, `namespace`
     - Symbols
     - Numbers
     - Regular expressions
-  - Comments
-  - Whitespace and Commas
-  - Collection Literals
-  - Miscellaneous Reader Sugar
-- Namespaces
-- Symbol Evaluation
-- Special Forms
-  - Suppressing Evaluation: `quote`
+  - Comments/注释
+  - Whitespace and Commas/空白和逗号
+  - Collection Literals/集合字面量
+  - Miscellaneous Reader Sugar/Reader语法糖
+- Namespaces/命名空间
+  - `*ns*`: current namespace
+  - `ns` macro
+- Symbol Evaluation/符号求值
+- Special Forms/特殊形式
+  - Suppressing Evaluation: `quote`, `'`
   - Code Blocks: `do`
   - Defining Vars: `def`
   - Local Bindings: `let`
   - Destructuring (`let`, Part 2)
-  - Sequential destructuring
-  - Map destructuring
+    - Sequential destructuring
+    - Map destructuring
   - Creating Functions: `fn`
   - Destructuring function arguments
   - Function literals
@@ -53,46 +59,48 @@ $ lein new app clojure-programming
 
 # I. Functional Programming and Concurrency/函数式编程和并发
 
-## 2. Functional Programming
+## 2. Functional Programming/函数式编程
 - What Does Functional Programming Mean?
 - On the Importance of Values
   - About Values
   - Comparing Values to Mutable Objects
   - A Critical Choice
-- First-Class and Higher-Order Functions
-  - Applying Ourselves Partially
-- Composition of Function(ality)
+- First-Class and Higher-Order Functions: `map`, `reduce`, `comp`, `complement`, `repeatedly`, ...
+  - Applying Ourselves Partially: `apply`, `partial`
+- Composition of Function(ality): `comp`, `->`, `->>`
   - Writing Higher-Order Functions
   - Building a Primitive Logging System with Composable Higher-Order Functions
 - Pure Functions
-  - Why Are Pure Functions Interesting?
+  - Why Are Pure Functions Interesting?: `memoize`
 - Functional Programming in the Real World
 
-## 3. Collections and Data Structures
+## 3. Collections and Data Structures/集合和数据结构
 - Abstractions over Implementations
-  - Collection
-  - Sequences
+  - Collection/集合: `IPersistentCollection`, `ITransientCollection`
+  - Sequences/序列: `Sequential`, `ISeq`
     - Sequences are not iterators
     - Sequences are not lists
     - Creating seqs
-    - Lazy seqs
+    - Lazy seqs: `LazySeq`
     - Head retention
-  - Associative
-    - Beware of nil values
-  - Indexed
-  - Stack
-  - Set
-  - Sorted
+  - Associative/关联: `Associative`
+    - Beware of `nil` values
+  - Indexed/带索引的: `Indexed`
+  - Stack/栈: `IPersistentStack`
+  - Set/集: `IPersistentSet`, `ITransientSet`
+  - Sorted/排序的: `Sorted`
     - Comparators and predicates to define ordering
 - Concise Collection Access
+  - Clojure collections are functions that lookup the value associated with the key or index
+  - keywords and symbols are functions that lookup themselves in the collection
   - Idiomatic Usage
   - Collections and Keys and Higher-Order Functions
 - Data Structure Types
-  - Lists
-  - Vectors
+  - Lists/列表
+  - Vectors/向量
     - Vectors as tuples
-  - Sets
-  - Maps
+  - Sets/集
+  - Maps/映射
     - Maps as ad-hoc structs
     - Other usages of maps
 - Immutability and Persistence
@@ -112,32 +120,35 @@ $ lein new app clojure-programming
     - Custom zippers
     - Ariadne’s zipper
 
-## 4. Concurrency and Parallelism
+## 4. Concurrency and Parallelism/并发和并行
 - Shifting Computation Through Time and Space
-  - Delays
-  - Futures
-  - Promises
+  - Delays: `delay`, `deref`/`@`
+  - Futures: `future`, `deref`/`@`
+  - Promises: `promise`, `deliver`, `deref`/`@`
 - Parallelism on the Cheap
 - State and Identity
-- Clojure Reference Types
+- Clojure Reference Types: **vars**, **refs**, **agents**, **atoms**
+  - metadata, watches, validator
 - Classifying Concurrent Operations
-- Atoms
+  - coordination
+  - synchronization
+- Atoms: `atom`, `swap!`, `compare-and-set!`, `reset!`
 - Notifications and Constraints
-  - Watches
-  - Validators
-- Refs
+  - Watches: `add-watch`, `remove-watch`
+  - Validators: `:validator`, `set-validator!`
+- Refs: `ref`
   - Software Transactional Memory
-  - The Mechanics of Ref Change
-    - Understanding alter
-    - Minimizing transaction conflict with commute
-    - Clobbering ref state with ref-set
+  - The Mechanics of Ref Change: `dosync`
+    - Understanding `alter`
+    - Minimizing transaction conflict with `commute`
+    - Clobbering ref state with `ref-set`
     - Enforcing local consistency by using validators
   - The Sharp Corners of Software Transactional Memory
     - Side-effecting functions strictly verboten
     - Minimize the scope of each transaction
     - Readers may retry
     - Write skew
-- Vars
+- Vars: `(var a-var)`/`#'a-var`, `def`
   - Defining Vars
     - Private vars
     - Docstrings
@@ -145,14 +156,14 @@ $ lein new app clojure-programming
   - Dynamic Scope
   - Vars Are Not Variables
   - Forward Declarations
-- Agents
-  - Dealing with Errors in Agent Actions
-    - Agent error handlers and modes
+- Agents: `agent`, `send`, `send-off`, `await`
+  - Dealing with Errors in Agent Actions: `agent-error`, `restart-agent`(`:clear-actions`)
+    - Agent error handlers and modes: `:error-mode`(`:fail`, `:continue`), `:error-handler`, `set-error-handler!`, `set-error-mode!`
   - I/O, Transactions, and Nested Sends
     - Persisting reference states with an agent-based write-behind log
     - Using agents to parallelize workloads
-- Using Java’s Concurrency Primitives
-  - Locking
+- Using Java’s Concurrency Primitives: `java.util.concurrent`
+  - Locking: `locking`
 
 # II. Building Abstractions/构建抽象
 
@@ -161,15 +172,15 @@ $ lein new app clojure-programming
   - What Macros Are Not
   - What Can Macros Do that Functions Cannot?
   - Macros Versus Ruby eval
-- Writing Your First Macro
+- Writing Your First Macro: `defmacro`, `macroexpand-1`
 - Debugging Macros
-  - Macroexpansion
+  - Macroexpansion: `macroexpand-1`, `macroexpand`
 - Syntax
-  - quote Versus syntax-quote
-  - unquote and unquote-splicing
+  - `quote`/`'` Versus `syntax-quote`/``` ` ```
+  - `unquote`/`~` and `unquote-splicing`/`~@`
 - When to Use Macros
 - Hygiene
-  - Gensyms to the Rescue
+  - Gensyms to the Rescue: `gensym`, `#` suffix auto-gensym
   - Letting the User Pick Names
   - Double Evaluation
 - Common Macro Idioms and Patterns
@@ -180,6 +191,7 @@ $ lein new app clojure-programming
     - Preserving user-provided type hints
   - Testing Contextual Macros
 - In Detail: `->` and `->>`
+  - `..`
 
 ## 6. Datatypes and Protocols
 - Protocols
@@ -377,6 +389,8 @@ $ lein new app clojure-programming
 
 ## 18. Choosing Clojure Type Definition Forms Wisely
 
+![https://raw.githubusercontent.com/cemerick/clojure-type-selection-flowchart/master/choosingtypeforms.png](./choosingtypeforms.png)
+
 ## 19. Introducing Clojure into Your Workplace
 - Just the Facts…
 - Emphasize Productivity
@@ -393,3 +407,6 @@ $ lein new app clojure-programming
 - Pallet
 - Avout
 - Clojure on Heroku
+
+# See Also
+* [Maze Generation: Algorithm Recap](https://weblog.jamisbuck.org/2011/2/7/maze-generation-algorithm-recap) - Jamis Buck, 2011-02-07
