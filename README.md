@@ -9,6 +9,7 @@ Playground of Lisp: Common Lisp, Scheme, Clojure, etc.
 # Implementations/Dialects
 - [Common Lisp](./CommonLisp/CommonLisp.md)
 - [Scheme](./Scheme/Scheme.md)
+- [Racket](./Racket/Racket.md)
 - [Clojure](./clojure/Clojure.md)
 
 ## Lisp Image
