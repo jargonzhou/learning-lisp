@@ -12,9 +12,17 @@
 REPL:
 ```shell
 # Windows WSL
-$ guile
-GNU Guile 3.0.1
-Copyright (C) 1995-2020 Free Software Foundation, Inc.
+➜  guile-3.0.11 sudo apt update && sudo apt install libunistring-dev
+➜  guile-3.0.11 ./configure
+➜  guile-3.0.11 make
+➜  guile-3.0.11 sudo make install
+➜  guile-3.0.11 which guile
+/usr/local/bin/guile
+
+# alias guile=/home/zhoujiagen/guile/guile-3.0.11/meta/guile
+➜  guile-3.0.11 ./meta/guile
+GNU Guile 3.0.11
+Copyright (C) 1995-2024 Free Software Foundation, Inc.
 
 Guile comes with ABSOLUTELY NO WARRANTY; for details type `,show w'.
 This program is free software, and you are welcome to redistribute it
@@ -22,7 +30,7 @@ under certain conditions; type `,show c' for details.
 
 Enter `,help' for help.
 scheme@(guile-user)> (version)
-$1 = "3.0.1"
+$1 = "3.0.11"
 scheme@(guile-user)> (+ 1 2 3)
 $2 = 6
 scheme@(guile-user)> (define (factorial n) ; define a function
@@ -32,6 +40,7 @@ $3 = 2432902008176640000
 scheme@(guile-user)> (getpwnam "zhoujiagen")
 $4 = #("zhoujiagen" "x" 1000 1000 ",,," "/home/zhoujiagen" "/usr/bin/zsh")
 scheme@(guile-user)> (exit)
+➜  guile-3.0.11
 ```
 
 ```shell

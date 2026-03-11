@@ -8,6 +8,16 @@ Akku.scm is a language package manager for Scheme. It grabs hold of code and sha
 * Audited build scripts for use with FFI libraries.
 * Mirror of R7RS libraries from [Snow](http://snow-fort.org/).
 
+```shell
+# Windows WSL 2
+➜  akku-1.1.0.amd64-linux ./install.sh
+You can now run ~/.local/bin/akku
+➜  akku-1.1.0.amd64-linux which akku
+/usr/local/bin/akku
+➜  akku-1.1.0.amd64-linux akku version
+1.1.0
+```
+
 # Usage
 
 ```shell

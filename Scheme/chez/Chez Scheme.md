@@ -6,16 +6,15 @@
 > Chez Scheme is both a programming language and an implementation of that language, with supporting tools and documentation.
 
 ```shell
-# MacOS
-✗ cd csv9.5.8
-✗ ./configure
-✗ sudo make install
-
-✗ which scheme
-/usr/local/bin/scheme
-✗ scheme
-Chez Scheme Version 9.5.8
-Copyright 1984-2022 Cisco Systems, Inc.
+# Windows WSL 2
+➜  csv10.3.0 ./configure
+➜  csv10.3.0 make
+➜  csv10.3.0 sudo make install
+➜  csv10.3.0 which scheme
+/usr/bin/scheme
+➜  csv10.3.0 scheme
+Chez Scheme Version 10.3.0
+Copyright 1984-2025 Cisco Systems, Inc.
 
 > (+ 1 2)
 3
@@ -26,16 +25,6 @@ Work with libraries:
 ```shell
 export CHEZSCHEMELIBDIRS="/path/to/lib"
 export CHEZSCHEMELIBEXTS=".ss:.scm"
-```
-
-# Tools
-
-* [chez-exe](https://github.com/gwatt/chez-exe): Chez Scheme self hosting executable
-```shell
-# Windows WSL
-git clone https://github.com/ufo5260987423/chez-exe.git
-scheme --script gen-config.ss --bootpath /usr/lib/csv10.1.0/ta6le
-sudo make install
 ```
 
 # The Scheme Programming Language

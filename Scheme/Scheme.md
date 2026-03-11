@@ -1,5 +1,8 @@
 # Schema
+* https://www.scheme.org/
 * https://en.wikipedia.org/wiki/Scheme_(programming_language)
+
+> Scheme is a classic programming language in the Lisp family. It emphasizes functional programming and domain-specific languages but adapts to other styles. Known for its clean and minimalist design, Scheme is one of the longest-lived and best-studied dynamic languages, and has many fast and portable implementations.
 
 Actions
 * [The Scheme Programming Language](./chez/README.md)
