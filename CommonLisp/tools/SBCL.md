@@ -116,6 +116,11 @@ TODO: CommonLisp SBCL Threading.ipynb
 - `sb-grovel`: help in generation of foreign function interfaces.
 - `sb-md5`: implements RFC1321 MD5 Message Digest Algorithm.
 - `sb-posix`: interface for calling out to OS.
+```lisp
+(require 'sb-posix)
+(sb-posix:getcwd)
+(sb-posix:chdir "/tmp/")
+```
 - `sb-queue`: merged into `sb-concurrency`.
 - `sb-rotate-byte`: an interface to bitwise rotation.
 - `sb-simd`: an interface for SIMD programming in SBCL.

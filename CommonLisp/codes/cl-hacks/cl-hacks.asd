@@ -10,7 +10,7 @@
                :ltk
                :defstar
                :closer-mop
-	       :fiveam)
+               :fiveam)
   :components ((:module "src"
                         :components
                         ((:module "ansi-cl"
@@ -109,6 +109,13 @@
                          (:module "on-lisp"
                                   :components
                                   ((:file "main")
+                                   (:module "utilities"
+                                            :components
+                                            ((:file "lists")
+					     (:file "map")
+					     (:file "io")
+					     (:file "symstr")
+					     (:file "macros")))
                                    (:file "c01-the-extensible-language")
                                    (:file "c02-functions")
                                    (:file "c03-functional-programming")
@@ -175,19 +182,22 @@
   :license ""
   :depends-on ("cl-hacks"
                ;"rove"
-	       "fiveam"
-	       )
+               "fiveam")
   :components ((:module "tests"
                         :components
                         ((:file "main")
-			 (:file "s-read-file-as-string")))
-	       (:module "src/cl-cookbook"
-			:components
-			((:file "c35-tests"))))
+                         (:file "s-read-file-as-string")
+                         (:module "on-lisp"
+                                  :components
+                                  ((:file "lists-test")))))
+               (:module "src/cl-cookbook"
+                        :components
+                        ((:file "c35-tests"))))
   :description "Test system for cl-hacks"
   :perform (test-op (op c)
-		    ;(symbol-call :rove :run c)
-		    (progn
-		      (symbol-call :fiveam :run! (find-symbol* :main-system :cl-hacks/tests/main))
-		      (symbol-call :fiveam :run! (find-symbol* :my-system :cl-cookbook/c35-tests))
-		      )))
+                    ;(symbol-call :rove :run c)
+                    (progn
+                     ;(symbol-call :fiveam :run! (find-symbol* :main-system :cl-hacks/tests/main))
+                     (symbol-call :fiveam :run! (find-symbol* :on-lisp-suite :cl-hacks/tests/main))
+                     ;(symbol-call :fiveam :run! (find-symbol* :my-system :cl-cookbook/c35-tests))
+                     )))

@@ -1,4 +1,6 @@
 (defpackage :on-lisp/c22-nondeterminism
-  (:use :cl))
+  (:use #:cl))
 
 (in-package :on-lisp/c22-nondeterminism)
+
+(format t "on-lisp/c22-nondeterminism~&")

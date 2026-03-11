@@ -1751,7 +1751,7 @@ Lisp读取器将`#'expression`解析为`(function expression)`, 见**function**.
 
 #### 2.4.8.6 `#.`(sharpsign dot)
 
-`#.foo`被解释为对`foo`表示的对象的求值结果. 当遇到`#.`时, 求值在`read`处理中完成. `#.`语法执行`foo`的读时(read-time)求值.
+`#.foo`被解释为对`foo`表示的对象的求值结果. 当遇到`#.`时, 求值在`read`处理中完成. `#.`语法执行`foo`的读取时(read-time)求值.
 
 当`*read-eval*`的值为false时, 禁用`#.`, 并抛出类型为`reader-error`的错误信号.
 

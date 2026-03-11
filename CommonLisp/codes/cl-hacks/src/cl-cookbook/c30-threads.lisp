@@ -68,27 +68,30 @@ bt:*supports-threads-p*
 ;;; run in REPL
 (print-message-top-level)
 ;;; 6. 4 with read-time eval macro
-(eval-when (:compile-toplevel)
-  (defun print-message-top-level-reader-macro ()
-    (bt:make-thread
-      (lambda ()
-        (format #.*standard-output* "Hello from thread - reader macro!~%"))
-      :name "hello")))
-(print-message-top-level-reader-macro)
+
+#|
+(eval-when (:compile-toplevel)		;
+(defun print-message-top-level-reader-macro () ;
+(bt:make-thread				;
+(lambda ()				;
+(format #.*standard-output* "Hello from thread - reader macro!~%")) ;
+:name "hello")))			;
+(print-message-top-level-reader-macro)	;
+|#
 
 ;;; 7. modify a shared resource from multiple threads
 
 ;;; 8. fix 7 using locks
 (defclass bank-account ()
-    ((id :initarg :id
-         :initform (error "id required")
-         :accessor :id)
-     (name :initarg :name
-           :initform (error "name required")
-           :accessor :name)
-     (balance :initarg :balance
-              :initform 0
-              :accessor :balance)))
+  ((id :initarg :id
+       :initform (error "id required")
+       :accessor :id)
+   (name :initarg :name
+         :initform (error "name required")
+         :accessor :name)
+   (balance :initarg :balance
+            :initform 0
+            :accessor :balance)))
 
 (defgeneric deposit (account amount)
   (:documentation "Deposit money into the account"))

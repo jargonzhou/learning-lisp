@@ -23,6 +23,9 @@
 * [SBCL](./SBCL.md): Steel Bank Common Lisp (SBCL) is a high performance Common Lisp compiler.
 * [sbcl-librarian](https://github.com/quil-lang/sbcl-librarian): An opinionated interface for creating C- and Python-compatible shared libraries in Common Lisp with SBCL.
 
+## See Also
+* [Building Docker images for Common Lisp applications](https://fukamachi.hashnode.dev/building-docker-images-for-common-lisp-applications): `clfoundation/sbcl`, `fukamachi/sbcl`.
+
 ## Docker
 * [CL Docker Images](https://cl-docker-images.common-lisp.dev/): The purpose of this project is to make it easy to use any open source ANSI Common Lisp implementation inside a Docker container.
 * [base-lisp-image](https://github.com/40ants/base-lisp-image): Base image for Common Lisp projects with SBCL or CCL and latest ASDF, Qlot and Roswell.
@@ -44,9 +47,9 @@
 * [named-readtables](https://github.com/melisgl/named-readtables): Named-Readtables is a library that provides a namespace for `readtables` akin to the already-existing namespace of packages.
 * [rutils](https://github.com/vseloved/rutils): RUTILS is a syntactic utilities package for Common Lisp. `_rutils.ipynb`
 * [Serapeum](./Serapeum.md): Utilities beyond Alexandria.
-* [series](https://series.sourceforge.net/): Richard C. Waters' `SERIES` package for Common Lisp.
+* [Series](./Series.md): Richard C. Waters' `SERIES` package for Common Lisp.
 * [trivial-do](https://github.com/yitzchak/trivial-do): Looping extensions that follow the style of the core `DO` functions.
-* [trivial-features](https://github.com/trivial-features/trivial-features): Ensures consistent `*FEATURES*` across multiple CLs.
+* [trivial-features](./trivial-features.md): Ensures consistent `*FEATURES*` across multiple CLs.
 * [trivial-garbage](https://github.com/trivial-garbage/trivial-garbage): Portable finalizers, weak hash-tables and weak pointers.
 
 ### Mathematics
@@ -125,6 +128,7 @@ See Also
 * [Comparison of Common Lisp Logging Libraries](https://sabracrolleton.github.io/logging-comparison.html)
 
 ## Applications
+* [AllegroServe](https://github.com/franzinc/aserve): a web server written in Common Lisp.
 * [apply-argv](https://github.com/pve1/apply-argv): Apply-argv is a library for parsing command line arguments.
 * [Caveman2](./Caveman2/Caveman2.md): Lightweight web application framework.
 * [Ceramic](https://github.com/ceramic/ceramic): Desktop web apps with Common Lisp.
@@ -144,6 +148,7 @@ See Also
 * [Spinneret](https://github.com/ruricolist/spinneret): Common Lisp HTML5 generator.
 * [usocket](https://github.com/usocket/usocket): Universal socket library for Common Lisp.
 * [Weblocks](https://github.com/40ants/weblocks): see Reblocks.
+* [Woo](https://github.com/fukamachi/woo): A fast non-blocking HTTP server on top of libev.
 
 ## Data Processing
 * [Babel](https://github.com/cl-babel/babel): Babel is a charset encoding/decoding library, not unlike GNU libiconv, written in pure Common Lisp.
@@ -151,13 +156,13 @@ See Also
 * [cl-ana](https://github.com/ghollisjr/cl-ana): Free (GPL) Common Lisp data analysis library with emphasis on modularity and conceptual clarity.
 * [cl-base64](https://quickdocs.org/cl-base64): Base64 encoding and decoding with URI support.
 * [cl-cuda](https://github.com/takagi/cl-cuda): Cl-cuda is a library to use NVIDIA CUDA in Common Lisp programs.
-* [cl-dbi](https://github.com/fukamachi/cl-dbi): Database independent interface for Common Lisp.
+* [cl-dbi](./cl-dbi.md): Database independent interface for Common Lisp.
 * [cl-fad](https://github.com/edicl/cl-fad): Portable pathname library.
 * [cl-pass](https://github.com/eudoxia0/cl-pass): Password hashing and verification library.
 * [cl-store](https://github.com/skypher/cl-store): an portable serialization package which should give you the ability to store all common-lisp data types (well not all yet) into streams.
 * [cl-yaml](https://github.com/eudoxia0/cl-yaml): A YAML parser and emitter built on top of [libyaml](http://pyyaml.org/wiki/LibYAML). Uses the [cl-libyaml](https://github.com/eudoxia0/cl-libyaml) library.
 * [CL-Yesql](https://github.com/ruricolist/cl-yesql): CL-Yesql is a Common Lisp library for using SQL, based on Clojure’s Yesql. SQL statements live in their own files, in SQL syntax, and are imported into Lisp as functions.
-* [clsql](https://github.com/sharplispers/clsql): Common Lisp SQL Interface library.
+* [clsql](./clsql.md): Common Lisp SQL Interface library.
 * [cxml](https://github.com/sharplispers/cxml): Closure XML - A Common Lisp XML Parser.
 * [Ironclad](https://github.com/froydnj/ironclad): A cryptographic toolkit written in Common Lisp.
 * [mito](https://github.com/fukamachi/mito): An ORM for Common Lisp with migrations, relationships and PostgreSQL support.
